@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
 )
 
@@ -16,9 +17,9 @@ var AppConfig *EnvConfig
 func LoadAppConfig(logger *zerolog.Logger) {
 	logger.Info().Msg("Loading Server Configurations...")
 
-	// if err := godotenv.Load(); err != nil {
-	// 	logger.Fatal().Err(err).Msg("Error loading .env file")
-	// }
+	if err := godotenv.Load(); err != nil {
+		logger.Fatal().Err(err).Msg("Error loading .env file")
+	}
 
 	envPort := os.Getenv("PORT")
 	envDBString := os.Getenv("DB_STRING")

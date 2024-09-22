@@ -20,10 +20,9 @@ func main() {
 	logger := zerolog.New(os.Stdout)
 
 	config.LoadAppConfig(&logger)
+	ddb := database.DDB{Logger: &logger}
 
 	logger.Info().Msg("Initializing DB (MySQL)")
-	logger.Info().Msg(config.AppConfig.ConnectionString)
-	ddb := database.DDB{Logger: &logger}
 	db := ddb.Connect(config.AppConfig.ConnectionString)
 	ddb.RunMigrations(db)
 
@@ -32,7 +31,7 @@ func main() {
 	featureFlagRepository := mysql.NewSqlRepository(db, &logger)
 
 	logger.Info().Msg("Initializing Services/UseCases")
-	featureFlagService := featureflag.LoadService(*featureFlagRepository, &logger)
+	featureFlagService := featureflag.LoadService(featureFlagRepository, &logger)
 
 	logger.Info().Msg("Initializing Handlers")
 	router := handler.NewEchoHandler(*featureFlagService)

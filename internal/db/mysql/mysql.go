@@ -7,8 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewSqlRepository(db *gorm.DB, logger *zerolog.Logger) *repository.SqlRepository {
+func NewSqlRepository(db *gorm.DB, logger *zerolog.Logger) repository.FeatureFlagRepository {
 	featureFlagRepository := repository.SqlRepository{DB: db, Logger: logger}
-
 	return &featureFlagRepository
 }

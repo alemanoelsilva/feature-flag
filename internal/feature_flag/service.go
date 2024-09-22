@@ -4,7 +4,7 @@ import (
 	"errors"
 	"ff/internal/db/model"
 	repo "ff/internal/db/repository"
-	entity "ff/internal/feature-flag/entity"
+	entity "ff/internal/feature_flag/entity"
 	"time"
 
 	"github.com/rs/zerolog"

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"ff/internal/db/model"
-	"ff/internal/feature-flag/entity"
+	"ff/internal/feature_flag/entity"
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"

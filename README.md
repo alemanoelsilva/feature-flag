@@ -7,13 +7,13 @@ This is a feature flags system that allows users to create, manage, and assign f
 ### Project Structure
 
 ```
-/feature-flags
+/feature_flags
 │
 ├── /cmd                     # Application entry points (for multiple binaries, if any)
 │   └── /app                 # Main application folder (main.go for your application)
 │
 ├── /internal                # Private application and library code
-│   ├── /featureflags        # Business logic for handling feature flags
+│   ├── /feature_flags       # Business logic for handling feature flags
 │   ├── /people              # Business logic for handling people
 │   ├── /auth                # Authentication logic (if needed)
 │   └── /db                  # Database handling (models, repositories, queries, etc.)

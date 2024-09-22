@@ -2,7 +2,7 @@ package http
 
 import (
 	"errors"
-	"ff/internal/feature-flag/entity"
+	"ff/internal/feature_flag/entity"
 	"net/http"
 	"strconv"
 

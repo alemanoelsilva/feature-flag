@@ -1,7 +1,7 @@
 package http
 
 import (
-	featureflag "ff/internal/feature-flag"
+	featureflag "ff/internal/feature_flag"
 
 	"github.com/labstack/echo/v4"
 )

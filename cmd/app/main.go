@@ -10,7 +10,7 @@ import (
 
 	handler "ff/api/handlers/http"
 	"ff/internal/db/mysql"
-	featureflag "ff/internal/feature-flag"
+	featureflag "ff/internal/feature_flag"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/rs/zerolog"

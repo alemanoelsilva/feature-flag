@@ -1,8 +1,10 @@
 package http
 
 import (
+	"encoding/json"
 	"errors"
 	"ff/internal/feature_flag/entity"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -34,9 +36,23 @@ func LoadFeatureFlagsRoutes(router *echo.Echo, handler *EchoHandler) {
 func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
-	var input entity.FeatureFlag
+	// bind the json body to the struct, but it's not working when the body comes from the test case
+	// var input entity.FeatureFlag
+	// if err := c.Bind(&input); err != nil {
+	// 	return response.ErrorHandler(http.StatusBadRequest, err)
+	// }
 
-	if err := c.Bind(&input); err != nil {
+	// manually decode the json body
+	var input entity.FeatureFlag
+	body, err := io.ReadAll(c.Request().Body)
+	if err != nil {
+		return response.ErrorHandler(http.StatusBadRequest, err)
+	}
+	if err := json.Unmarshal(body, &input); err != nil {
+		return response.ErrorHandler(http.StatusBadRequest, err)
+	}
+
+	if err := input.Validate(); err != nil {
 		return response.ErrorHandler(http.StatusBadRequest, err)
 	}
 
@@ -46,7 +62,7 @@ func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
 	}
 
 	if err := e.FeatureFlagService.CreateFeatureFlag(input, personId); err != nil {
-		return response.ErrorHandler(http.StatusBadRequest, err)
+		return response.ErrorHandler(http.StatusInternalServerError, err)
 	}
 
 	return response.SuccessHandler(http.StatusCreated, handleResponseMessage("Feature Flag Created"))

@@ -2,6 +2,7 @@ package entity
 
 import (
 	"errors"
+	"regexp"
 	"time"
 )
 
@@ -17,6 +18,13 @@ func (ff *FeatureFlag) Validate() error {
 	if ff.Name == "" {
 		return errors.New("name is required")
 	}
+
+	// Validate Name format
+	nameRegex := regexp.MustCompile(`^[A-Z0-9_]+$`)
+	if !nameRegex.MatchString(ff.Name) {
+		return errors.New("name must be uppercase and contain only letters, numbers, underscores")
+	}
+
 	if ff.Description == "" {
 		return errors.New("description is required")
 	}

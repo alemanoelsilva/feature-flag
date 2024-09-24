@@ -42,7 +42,7 @@ func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
 	// 	return response.ErrorHandler(http.StatusBadRequest, err)
 	// }
 
-	// manually decode the json body
+	// manually decoding the json body
 	var input entity.FeatureFlag
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {

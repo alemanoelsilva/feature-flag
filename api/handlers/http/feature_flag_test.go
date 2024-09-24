@@ -30,7 +30,7 @@ func (m *MockRepository) AddFeatureFlag(flag model.FeatureFlag) error {
 }
 
 var validFeatureFlagBody = entity.FeatureFlag{
-	Name:        "TestFlag",
+	Name:        "TEST_FLAG_NAME",
 	Description: "Test Description",
 	IsActive:    true,
 }
@@ -73,6 +73,13 @@ func TestCreateFeatureFlagHandler_InvalidInput(t *testing.T) {
 			personId:           "123",
 			expectedStatusCode: http.StatusBadRequest,
 			expectedResponse:   `{"error":"name is required"}`,
+		},
+		{
+			name:               "Name must be uppercase and contain only letters, numbers, underscores",
+			input:              entity.FeatureFlag{Name: "test_flag_name"},
+			personId:           "123",
+			expectedStatusCode: http.StatusBadRequest,
+			expectedResponse:   `{"error":"name must be uppercase and contain only letters, numbers, underscores"}`,
 		},
 		{
 			name:               "Description is required",

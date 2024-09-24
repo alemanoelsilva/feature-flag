@@ -1,6 +1,7 @@
 package http
 
 import (
+	"ff/api/handlers/http/middlewares"
 	featureflag "ff/internal/feature_flag"
 
 	"github.com/labstack/echo/v4"
@@ -16,6 +17,9 @@ func NewEchoHandler(featureflag featureflag.FeatureFlagService) *echo.Echo {
 	}
 
 	router := echo.New()
+
+	// logger setup
+	router.Use(middlewares.LoggerMiddleware())
 
 	LoadFeatureFlagsRoutes(router, handler)
 

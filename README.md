@@ -14,7 +14,7 @@ This is a feature flags system that allows users to create, manage, and assign f
 │
 ├── /internal                # Private application and library code
 │   ├── /feature_flags       # Business logic for handling feature flags
-│   ├── /people              # Business logic for handling people
+│   ├── /person              # Business logic for handling person
 │   ├── /auth                # Authentication logic (if needed)
 │   └── /db                  # Database handling (models, repositories, queries, etc.)
 │

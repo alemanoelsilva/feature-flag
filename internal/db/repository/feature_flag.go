@@ -10,6 +10,7 @@ import (
 
 type FeatureFlagRepository interface {
 	AddFeatureFlag(featureFlag model.FeatureFlag) error
+	GetFeatureFlag(filters *model.FeatureFlagFilters) ([]model.FeatureFlag, error)
 }
 
 type SqlRepository struct {
@@ -24,4 +25,19 @@ func (s *SqlRepository) AddFeatureFlag(featureFlag model.FeatureFlag) error {
 	}
 
 	return nil
+}
+
+func (s *SqlRepository) GetFeatureFlag(filters *model.FeatureFlagFilters) ([]model.FeatureFlag, error) {
+	query := s.DB.Debug().InnerJoins("Person")
+	if filters.Name != "" {
+		query.Where("feature_flags.name = ?", filters.Name)
+	}
+
+	var featureFlags []model.FeatureFlag
+	if result := query.Find(&featureFlags); result.Error != nil {
+		s.Logger.Error().Err(result.Error)
+		return nil, errors.New("error when getting feature flags")
+	}
+
+	return featureFlags, nil
 }

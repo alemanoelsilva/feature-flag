@@ -36,3 +36,14 @@ func (ff *FeatureFlag) Validate() error {
 	}
 	return nil
 }
+
+type FeatureFlagResponse struct {
+	ID             uint
+	Name           string
+	Description    string
+	IsActive       bool
+	ExpirationDate string
+	CreatedAt      string
+	UpdatedAt      string
+	Person         PersonResponse
+}

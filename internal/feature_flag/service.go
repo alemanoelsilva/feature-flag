@@ -47,4 +47,33 @@ func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, pers
 		PersonID:       personId,
 	})
 }
+
+func (ff *FeatureFlagService) GetFeatureFlag() ([]entity.FeatureFlagResponse, error) {
+	ff.Logger.Info().Msg("Getting Feature Flag")
+
+	var filters model.FeatureFlagFilters
+	featureFlags, err := ff.Repository.GetFeatureFlag(&filters)
+	if err != nil {
+		return nil, err
+	}
+
+	var featureFlagResponses []entity.FeatureFlagResponse
+	for _, ffDB := range featureFlags {
+		featureFlagResponses = append(featureFlagResponses, entity.FeatureFlagResponse{
+			ID:             ffDB.ID,
+			Name:           ffDB.Name,
+			Description:    ffDB.Description,
+			IsActive:       ffDB.IsActive,
+			ExpirationDate: ffDB.ExpirationDate,
+			CreatedAt:      ffDB.CreatedAt.Format("2006-01-02 15:04:05"),
+			UpdatedAt:      ffDB.UpdatedAt.Format("2006-01-02 15:04:05"),
+			Person: entity.PersonResponse{
+				ID:    ffDB.Person.ID,
+				Name:  ffDB.Person.Name,
+				Email: ffDB.Person.Email,
+			},
+		})
+	}
+
+	return featureFlagResponses, nil
 }

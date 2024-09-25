@@ -31,6 +31,7 @@ func getPersonIdFromHeaders(c echo.Context) (uint, error) {
 
 func LoadFeatureFlagsRoutes(router *echo.Echo, handler *EchoHandler) {
 	router.POST("/api/feature-flags/v1/feature-flags", handler.createFeatureFlagHandler)
+	router.GET("/api/feature-flags/v1/feature-flags", handler.getFeatureFlagHandler)
 }
 
 func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
@@ -66,4 +67,15 @@ func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
 	}
 
 	return response.SuccessHandler(http.StatusCreated, handleResponseMessage("Feature Flag Created"))
+}
+
+func (e *EchoHandler) getFeatureFlagHandler(c echo.Context) error {
+	response := ResponseJSON{c: c}
+
+	featureFlag, err := e.FeatureFlagService.GetFeatureFlag()
+	if err != nil {
+		return response.ErrorHandler(http.StatusInternalServerError, err)
+	}
+
+	return response.SuccessHandler(http.StatusOK, featureFlag)
 }

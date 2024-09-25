@@ -37,7 +37,7 @@ var validFeatureFlagBody = entity.FeatureFlag{
 
 // ... existing imports and mock setup ...
 
-func TestCreateFeatureFlagHandler_Success(t *testing.T) {
+func TestCreateFeatureFlagHandlerSuccess(t *testing.T) {
 	tests := []struct {
 		name                string
 		input               entity.FeatureFlag
@@ -58,7 +58,7 @@ func TestCreateFeatureFlagHandler_Success(t *testing.T) {
 	runTests(t, tests, nil)
 }
 
-func TestCreateFeatureFlagHandler_InvalidInput(t *testing.T) {
+func TestCreateFeatureFlagHandlerInvalidInput(t *testing.T) {
 	tests := []struct {
 		name                string
 		input               entity.FeatureFlag
@@ -104,7 +104,7 @@ func TestCreateFeatureFlagHandler_InvalidInput(t *testing.T) {
 	runTests(t, tests, nil)
 }
 
-func TestCreateFeatureFlagHandler_InternalValidationErrors(t *testing.T) {
+func TestCreateFeatureFlagHandlerInternalValidationErrors(t *testing.T) {
 	tests := []struct {
 		name                string
 		input               entity.FeatureFlag

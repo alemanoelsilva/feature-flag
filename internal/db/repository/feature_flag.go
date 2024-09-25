@@ -20,7 +20,7 @@ type SqlRepository struct {
 func (s *SqlRepository) AddFeatureFlag(featureFlag model.FeatureFlag) error {
 	if result := s.DB.Create(&featureFlag); result.Error != nil {
 		s.Logger.Error().Err(result.Error)
-		return errors.New("internal Server Error")
+		return errors.New("error when creating feature flag")
 	}
 
 	return nil

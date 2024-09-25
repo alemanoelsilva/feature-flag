@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func getPersonIdFromHeaders(c echo.Context) (int, error) {
+func getPersonIdFromHeaders(c echo.Context) (uint, error) {
 	personIdStr := c.Request().Header.Get("Personid")
 	if personIdStr == "" {
 		return 0, errors.New("missing Personid header")
@@ -26,7 +26,7 @@ func getPersonIdFromHeaders(c echo.Context) (int, error) {
 		return 0, errors.New("you are not logged in")
 	}
 
-	return personId, nil
+	return uint(personId), nil
 }
 
 func LoadFeatureFlagsRoutes(router *echo.Echo, handler *EchoHandler) {

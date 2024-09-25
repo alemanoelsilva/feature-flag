@@ -91,6 +91,6 @@ func (s *TestSqlRepository) TestAddFeatureFlag() {
 		// Attempt to add the same feature flag again
 		err = s.repo.AddFeatureFlag(featureFlag)
 		s.Require().Error(err)
-		s.Equal("internal Server Error", err.Error())
+		s.Equal("error when creating feature flag", err.Error())
 	})
 }

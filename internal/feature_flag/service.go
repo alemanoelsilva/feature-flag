@@ -2,10 +2,10 @@ package featureflag
 
 import (
 	"errors"
+
 	"ff/internal/db/model"
 	repo "ff/internal/db/repository"
 	entity "ff/internal/feature_flag/entity"
-	"time"
 
 	"github.com/rs/zerolog"
 )
@@ -22,27 +22,29 @@ func LoadService(r repo.FeatureFlagRepository, l *zerolog.Logger) *FeatureFlagSe
 	}
 }
 
-func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, personId int) error {
+func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, personId uint) error {
 	ff.Logger.Info().Msg("Creating a new Feature Flag")
 
-	var expirationDate *time.Time
-	if request.ExpirationDate != "" {
-		expDate, err := time.Parse(time.DateOnly, request.ExpirationDate)
-		if err != nil {
-			return errors.New("invalid expiration date format")
-		}
-		expirationDate = &expDate
+	var filters model.FeatureFlagFilters
+	filters.Name = request.Name
+
+	featureFlags, err := ff.Repository.GetFeatureFlag(&filters)
+	if err != nil {
+		return err
+	}
+
+	// TODO: return 409
+	if len(featureFlags) > 0 {
+		return errors.New("feature flag already exists")
 	}
 
 	return ff.Repository.AddFeatureFlag(model.FeatureFlag{
-		ID:          request.ID,
-		Name:        request.Name,
-		Description: request.Description,
-		IsActive:    request.IsActive,
-		// to make this field optional, we need to pass a pointer to the expiration date
-		ExpirationDate: expirationDate,
-		Person: model.Person{
-			ID: personId,
-		},
+		ID:             request.ID,
+		Name:           request.Name,
+		Description:    request.Description,
+		IsActive:       request.IsActive,
+		ExpirationDate: request.ExpirationDate,
+		PersonID:       personId,
 	})
+}
 }

@@ -25,6 +25,10 @@ func LoadService(r repo.FeatureFlagRepository, l *zerolog.Logger) *FeatureFlagSe
 func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, personId uint) error {
 	ff.Logger.Info().Msg("Creating a new Feature Flag")
 
+	if err := request.Validate(); err != nil {
+		return errors.New(err.Error())
+	}
+
 	var filters model.FeatureFlagFilters
 	filters.Name = request.Name
 

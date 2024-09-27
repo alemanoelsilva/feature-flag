@@ -53,10 +53,6 @@ func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
 		return response.ErrorHandler(http.StatusBadRequest, err)
 	}
 
-	if err := input.Validate(); err != nil {
-		return response.ErrorHandler(http.StatusBadRequest, err)
-	}
-
 	personId, err := getPersonIdFromHeaders(c)
 	if err != nil {
 		return response.ErrorHandler(http.StatusUnauthorized, err)

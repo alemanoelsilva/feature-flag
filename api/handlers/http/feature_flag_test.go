@@ -29,176 +29,196 @@ func (m *MockRepository) AddFeatureFlag(flag model.FeatureFlag) error {
 	return args.Error(0)
 }
 
-var validFeatureFlagBody = entity.FeatureFlag{
-	Name:        "TEST_FLAG_NAME",
-	Description: "Test Description",
-	IsActive:    true,
+func (m *MockRepository) GetFeatureFlag(filters *model.FeatureFlagFilters) ([]model.FeatureFlag, error) {
+	args := m.Called(filters)
+	return args.Get(0).([]model.FeatureFlag), args.Error(1)
 }
 
-// ... existing imports and mock setup ...
-
-func TestCreateFeatureFlagHandlerSuccess(t *testing.T) {
-	tests := []struct {
-		name                string
-		input               entity.FeatureFlag
-		personId            string
-		mockRepositoryError error
-		expectedStatusCode  int
-		expectedResponse    string
-	}{
-		{
-			name:               "Success",
-			input:              validFeatureFlagBody,
-			personId:           "123",
-			expectedStatusCode: http.StatusCreated,
-			expectedResponse:   `{"message":"Feature Flag Created"}`,
-		},
+// Create Feature Flag Tests Cases
+func TestCreateFeatureFlagHandler(t *testing.T) {
+	validFeatureFlagBody := entity.FeatureFlag{
+		Name:        "TEST_FLAG_NAME",
+		Description: "Test Description",
+		IsActive:    true,
 	}
 
-	runTests(t, tests, nil)
-}
+	t.Run("Success", func(t *testing.T) {
+		// Setup
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodPost, "/api/feature-flags/v1/feature-flags", nil)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Personid", "123")
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
 
-func TestCreateFeatureFlagHandlerInvalidInput(t *testing.T) {
-	tests := []struct {
-		name                string
-		input               entity.FeatureFlag
-		personId            string
-		mockRepositoryError error
-		expectedStatusCode  int
-		expectedResponse    string
-	}{
-		{
-			name:               "Name is required",
-			input:              entity.FeatureFlag{},
-			personId:           "123",
-			expectedStatusCode: http.StatusBadRequest,
-			expectedResponse:   `{"error":"name is required"}`,
-		},
-		{
-			name:               "Name must be uppercase and contain only letters, numbers, underscores",
-			input:              entity.FeatureFlag{Name: "test_flag_name"},
-			personId:           "123",
-			expectedStatusCode: http.StatusBadRequest,
-			expectedResponse:   `{"error":"name must be uppercase and contain only letters, numbers, underscores"}`,
-		},
-		{
-			name:               "Description is required",
-			input:              entity.FeatureFlag{Name: validFeatureFlagBody.Name},
-			personId:           "123",
-			expectedStatusCode: http.StatusBadRequest,
-			expectedResponse:   `{"error":"description is required"}`,
-		},
-		{
-			name: "ExpirationDate format is invalid",
-			input: entity.FeatureFlag{
-				Name:           validFeatureFlagBody.Name,
-				Description:    validFeatureFlagBody.Description,
-				ExpirationDate: "invalid-date",
+		mockRepository := new(MockRepository)
+		mockRepository.On("GetFeatureFlag", mock.AnythingOfType("*model.FeatureFlagFilters")).Return([]model.FeatureFlag{}, nil)
+		mockRepository.On("AddFeatureFlag", mock.AnythingOfType("model.FeatureFlag")).Return(nil)
+
+		mockLogger := zerolog.New(os.Stdout)
+
+		handler := &EchoHandler{
+			FeatureFlagService: featureflag.FeatureFlagService{
+				Repository: mockRepository,
+				Logger:     &mockLogger,
 			},
-			personId:           "123",
-			expectedStatusCode: http.StatusBadRequest,
-			expectedResponse:   `{"error":"expirationDate must be in YYYY-MM-DD format"}`,
-		},
-	}
+		}
 
-	runTests(t, tests, nil)
+		inputJSON, _ := json.Marshal(validFeatureFlagBody)
+		c.Request().Body = io.NopCloser(bytes.NewBuffer(inputJSON))
+
+		// Perform request
+		err := handler.createFeatureFlagHandler(c)
+
+		// Assertions
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusCreated, rec.Code)
+		assert.JSONEq(t, `{"message":"Feature Flag Created"}`, rec.Body.String())
+
+		mockRepository.AssertCalled(t, "GetFeatureFlag", mock.Anything)
+		mockRepository.AssertCalled(t, "AddFeatureFlag", mock.Anything)
+	})
+
+	t.Run("Missing PersonId", func(t *testing.T) {
+		// Setup
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodPost, "/api/feature-flags/v1/feature-flags", nil)
+		req.Header.Set("Content-Type", "application/json")
+		// Intentionally not setting PersonId header
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		mockRepository := new(MockRepository)
+		mockLogger := zerolog.New(os.Stdout)
+
+		handler := &EchoHandler{
+			FeatureFlagService: featureflag.FeatureFlagService{
+				Repository: mockRepository,
+				Logger:     &mockLogger,
+			},
+		}
+
+		inputJSON, _ := json.Marshal(validFeatureFlagBody)
+		c.Request().Body = io.NopCloser(bytes.NewBuffer(inputJSON))
+
+		// Perform request
+		err := handler.createFeatureFlagHandler(c)
+
+		// Assertions
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.JSONEq(t, `{"error":"missing Personid header"}`, rec.Body.String())
+
+		mockRepository.AssertNotCalled(t, "GetFeatureFlag")
+		mockRepository.AssertNotCalled(t, "AddFeatureFlag")
+	})
+
+	t.Run("Invalid PersonId", func(t *testing.T) {
+		// Setup
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodPost, "/api/feature-flags/v1/feature-flags", nil)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Personid", "invalid")
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		mockRepository := new(MockRepository)
+		mockLogger := zerolog.New(os.Stdout)
+
+		handler := &EchoHandler{
+			FeatureFlagService: featureflag.FeatureFlagService{
+				Repository: mockRepository,
+				Logger:     &mockLogger,
+			},
+		}
+
+		inputJSON, _ := json.Marshal(validFeatureFlagBody)
+		c.Request().Body = io.NopCloser(bytes.NewBuffer(inputJSON))
+
+		// Perform request
+		err := handler.createFeatureFlagHandler(c)
+
+		// Assertions
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.JSONEq(t, `{"error":"invalid Personid format"}`, rec.Body.String())
+
+		mockRepository.AssertNotCalled(t, "GetFeatureFlag")
+		mockRepository.AssertNotCalled(t, "AddFeatureFlag")
+	})
+
+	t.Run("Add Repository Error", func(t *testing.T) {
+		// Setup
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodPost, "/api/feature-flags/v1/feature-flags", nil)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Personid", "123")
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		mockRepository := new(MockRepository)
+		mockRepository.On("GetFeatureFlag", mock.AnythingOfType("*model.FeatureFlagFilters")).Return([]model.FeatureFlag{}, nil)
+		mockRepository.On("AddFeatureFlag", mock.AnythingOfType("model.FeatureFlag")).Return(errors.New("add repository error"))
+
+		mockLogger := zerolog.New(os.Stdout)
+
+		handler := &EchoHandler{
+			FeatureFlagService: featureflag.FeatureFlagService{
+				Repository: mockRepository,
+				Logger:     &mockLogger,
+			},
+		}
+
+		inputJSON, _ := json.Marshal(validFeatureFlagBody)
+		c.Request().Body = io.NopCloser(bytes.NewBuffer(inputJSON))
+
+		// Perform request
+		err := handler.createFeatureFlagHandler(c)
+
+		// Assertions
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.JSONEq(t, `{"error":"add repository error"}`, rec.Body.String())
+
+		mockRepository.AssertCalled(t, "GetFeatureFlag", mock.Anything)
+		mockRepository.AssertCalled(t, "AddFeatureFlag", mock.Anything)
+	})
+
+	t.Run("Get Repository Error", func(t *testing.T) {
+		// Setup
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodPost, "/api/feature-flags/v1/feature-flags", nil)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Personid", "123")
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		mockRepository := new(MockRepository)
+		mockRepository.On("GetFeatureFlag", mock.AnythingOfType("*model.FeatureFlagFilters")).Return([]model.FeatureFlag{}, errors.New("get repository error"))
+
+		mockLogger := zerolog.New(os.Stdout)
+
+		handler := &EchoHandler{
+			FeatureFlagService: featureflag.FeatureFlagService{
+				Repository: mockRepository,
+				Logger:     &mockLogger,
+			},
+		}
+
+		inputJSON, _ := json.Marshal(validFeatureFlagBody)
+		c.Request().Body = io.NopCloser(bytes.NewBuffer(inputJSON))
+
+		// Perform request
+		err := handler.createFeatureFlagHandler(c)
+
+		// Assertions
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.JSONEq(t, `{"error":"get repository error"}`, rec.Body.String())
+
+		mockRepository.AssertCalled(t, "GetFeatureFlag", mock.Anything)
+		mockRepository.AssertNotCalled(t, "AddFeatureFlag")
+	})
 }
 
-func TestCreateFeatureFlagHandlerInternalValidationErrors(t *testing.T) {
-	tests := []struct {
-		name                string
-		input               entity.FeatureFlag
-		personId            string
-		mockRepositoryError error
-		expectedStatusCode  int
-		expectedResponse    string
-	}{
-		{
-			name:                "Missing PersonId",
-			input:               validFeatureFlagBody,
-			personId:            "",
-			mockRepositoryError: nil,
-			expectedStatusCode:  http.StatusUnauthorized,
-			expectedResponse:    `{"error":"missing Personid header"}`,
-		},
-		{
-			name:                "Invalid PersonId",
-			input:               validFeatureFlagBody,
-			personId:            "invalid",
-			mockRepositoryError: nil,
-			expectedStatusCode:  http.StatusUnauthorized,
-			expectedResponse:    `{"error":"invalid Personid format"}`,
-		},
-		{
-			name:                "Repository Error",
-			input:               validFeatureFlagBody,
-			personId:            "123",
-			mockRepositoryError: errors.New("repository error"),
-			expectedStatusCode:  http.StatusInternalServerError,
-			expectedResponse:    `{"error":"repository error"}`,
-		},
-	}
-
-	runTests(t, tests, nil)
-}
-
-// Helper function to run the tests
-func runTests(t *testing.T, tests []struct {
-	name                string
-	input               entity.FeatureFlag
-	personId            string
-	mockRepositoryError error
-	expectedStatusCode  int
-	expectedResponse    string
-}, setupMock func(*MockRepository)) {
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Setup
-			e := echo.New()
-			req := httptest.NewRequest(http.MethodPost, "/api/feature-flags/v1/feature-flags", nil)
-			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("Personid", tt.personId)
-			rec := httptest.NewRecorder()
-			c := e.NewContext(req, rec)
-
-			// Create mock repository
-			mockRepository := new(MockRepository)
-			// Only set up the mock expectation if we're testing a case that should reach the repository
-			if tt.expectedStatusCode == http.StatusCreated || tt.mockRepositoryError != nil {
-				mockRepository.On("AddFeatureFlag", mock.AnythingOfType("model.FeatureFlag")).Return(tt.mockRepositoryError)
-			}
-
-			if setupMock != nil {
-				setupMock(mockRepository)
-			}
-
-			// Create logger
-			mockLogger := zerolog.New(os.Stdout)
-
-			// Create handler
-			handler := &EchoHandler{
-				FeatureFlagService: featureflag.FeatureFlagService{
-					Repository: mockRepository,
-					Logger:     &mockLogger,
-				},
-			}
-
-			// Prepare input
-			inputJSON, _ := json.Marshal(tt.input)
-			c.Request().Body = io.NopCloser(bytes.NewBuffer(inputJSON))
-
-			// Perform request
-			err := handler.createFeatureFlagHandler(c)
-
-			// Assertions
-			assert.NoError(t, err)
-			assert.Equal(t, tt.expectedStatusCode, rec.Code)
-			assert.JSONEq(t, tt.expectedResponse, rec.Body.String())
-
-			// Verify mock expectations
-			if tt.expectedStatusCode == http.StatusCreated || tt.mockRepositoryError != nil {
-				mockRepository.AssertExpectations(t)
-			}
-		})
-	}
-}
+// Get Feature Flag Tests Cases

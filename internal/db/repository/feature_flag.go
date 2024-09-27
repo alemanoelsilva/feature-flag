@@ -10,7 +10,7 @@ import (
 
 type FeatureFlagRepository interface {
 	AddFeatureFlag(featureFlag model.FeatureFlag) error
-	GetFeatureFlag(filters *model.FeatureFlagFilters) ([]model.FeatureFlag, error)
+	GetFeatureFlag(pagination model.Pagination, filters model.FeatureFlagFilters) ([]model.FeatureFlag, int64, error)
 }
 
 type SqlRepository struct {
@@ -27,17 +27,30 @@ func (s *SqlRepository) AddFeatureFlag(featureFlag model.FeatureFlag) error {
 	return nil
 }
 
-func (s *SqlRepository) GetFeatureFlag(filters *model.FeatureFlagFilters) ([]model.FeatureFlag, error) {
-	query := s.DB.Debug().InnerJoins("Person")
+func (s *SqlRepository) GetFeatureFlag(pagination model.Pagination, filters model.FeatureFlagFilters) ([]model.FeatureFlag, int64, error) {
+	query := s.DB.Debug().Model(&model.FeatureFlag{}).InnerJoins("Person")
+
+	// apply filters
 	if filters.Name != "" {
 		query.Where("feature_flags.name = ?", filters.Name)
 	}
 
+	// get total count
+	var totalCount int64
+	if err := query.Count(&totalCount).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// apply pagination
+	offset := (pagination.Page - 1) * pagination.Limit
+	query.Offset(offset).Limit(pagination.Limit)
+
+	// get feature flags
 	var featureFlags []model.FeatureFlag
 	if result := query.Find(&featureFlags); result.Error != nil {
 		s.Logger.Error().Err(result.Error)
-		return nil, errors.New("error when getting feature flags")
+		return nil, 0, errors.New("error when getting feature flags")
 	}
 
-	return featureFlags, nil
+	return featureFlags, totalCount, nil
 }

@@ -38,12 +38,12 @@ func (ff *FeatureFlag) Validate() error {
 }
 
 type FeatureFlagResponse struct {
-	ID             uint
-	Name           string
-	Description    string
-	IsActive       bool
-	ExpirationDate string
-	CreatedAt      string
-	UpdatedAt      string
-	Person         PersonResponse
+	ID             uint           `json:"id"`
+	Name           string         `json:"name"`
+	Description    string         `json:"description"`
+	IsActive       bool           `json:"isActive"`
+	ExpirationDate string         `json:"expirationDate"`
+	CreatedAt      string         `json:"createdAt"`
+	UpdatedAt      string         `json:"updatedAt"`
+	Person         PersonResponse `json:"person"`
 }

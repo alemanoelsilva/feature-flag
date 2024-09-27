@@ -32,13 +32,17 @@ func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, pers
 	var filters model.FeatureFlagFilters
 	filters.Name = request.Name
 
-	featureFlags, err := ff.Repository.GetFeatureFlag(&filters)
+	var pagination model.Pagination
+	pagination.Page = 0
+	pagination.Limit = 1
+
+	_, totalCount, err := ff.Repository.GetFeatureFlag(pagination, filters)
 	if err != nil {
 		return err
 	}
 
 	// TODO: return 409
-	if len(featureFlags) > 0 {
+	if totalCount > 0 {
 		return errors.New("feature flag already exists")
 	}
 
@@ -52,13 +56,17 @@ func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, pers
 	})
 }
 
-func (ff *FeatureFlagService) GetFeatureFlag() ([]entity.FeatureFlagResponse, error) {
+func (ff *FeatureFlagService) GetFeatureFlag(page int, limit int) ([]entity.FeatureFlagResponse, int64, error) {
 	ff.Logger.Info().Msg("Getting Feature Flag")
 
+	var pagination model.Pagination
+	pagination.Page = page
+	pagination.Limit = limit
+
 	var filters model.FeatureFlagFilters
-	featureFlags, err := ff.Repository.GetFeatureFlag(&filters)
+	featureFlags, totalCount, err := ff.Repository.GetFeatureFlag(pagination, filters)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	var featureFlagResponses []entity.FeatureFlagResponse
@@ -79,5 +87,5 @@ func (ff *FeatureFlagService) GetFeatureFlag() ([]entity.FeatureFlagResponse, er
 		})
 	}
 
-	return featureFlagResponses, nil
+	return featureFlagResponses, totalCount, nil
 }

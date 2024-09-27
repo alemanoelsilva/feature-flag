@@ -68,10 +68,20 @@ func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
 func (e *EchoHandler) getFeatureFlagHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
-	featureFlag, err := e.FeatureFlagService.GetFeatureFlag()
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+
+	if page <= 0 {
+		page = 1
+	}
+	if limit <= 0 {
+		limit = 10 // Default limit
+	}
+
+	featureFlag, totalCount, err := e.FeatureFlagService.GetFeatureFlag(page, limit)
 	if err != nil {
 		return response.ErrorHandler(http.StatusInternalServerError, err)
 	}
 
-	return response.SuccessHandler(http.StatusOK, featureFlag)
+	return response.PaginationHandler(http.StatusOK, featureFlag, totalCount)
 }

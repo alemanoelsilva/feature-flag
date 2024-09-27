@@ -38,6 +38,13 @@ func (s ResponseJSON) SuccessHandler(code int, data interface{}) error {
 	return s.c.JSON(code, data)
 }
 
+func (s ResponseJSON) PaginationHandler(code int, data interface{}, totalCount int64) error {
+	return s.c.JSON(code, map[string]interface{}{
+		"items": data,
+		"total": totalCount,
+	})
+}
+
 func (s ResponseJSON) ErrorHandler(code int, err error) error {
 	return s.c.JSON(code, map[string]interface{}{"error": err.Error()})
 }

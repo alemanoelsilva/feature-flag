@@ -15,5 +15,8 @@ type FeatureFlag struct {
 }
 
 type FeatureFlagFilters struct {
-	Name string
+	ID       uint
+	Name     string
+	IsActive *bool
+	PersonID uint
 }

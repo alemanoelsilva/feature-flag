@@ -70,18 +70,41 @@ func (e *EchoHandler) getFeatureFlagHandler(c echo.Context) error {
 
 	page, _ := strconv.Atoi(c.QueryParam("page"))
 	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	id, _ := strconv.Atoi(c.QueryParam("id"))
+	personId, _ := strconv.Atoi(c.QueryParam("personId"))
+	name := c.QueryParam("name")
 
-	if page <= 0 {
-		page = 1
+	// TODO: check if again, it is terrible
+	isActiveStr := c.QueryParam("isActive")
+	var isActive *bool
+	if isActiveStr == "true" {
+		trueValue := true
+		isActive = &trueValue
+	} else if isActiveStr == "false" {
+		falseValue := false
+		isActive = &falseValue
+	} else if isActiveStr != "" {
+		return response.ErrorHandler(http.StatusBadRequest, errors.New("invalid isActive value"))
+	}
+
+	if page <= 1 {
+		page = 1 // Default page
 	}
 	if limit <= 0 {
 		limit = 10 // Default limit
 	}
 
-	featureFlag, totalCount, err := e.FeatureFlagService.GetFeatureFlag(page, limit)
+	featureFlag, totalCount, err := e.FeatureFlagService.GetFeatureFlag(page, limit, name, isActive, uint(id), uint(personId))
 	if err != nil {
 		return response.ErrorHandler(http.StatusInternalServerError, err)
 	}
 
-	return response.PaginationHandler(http.StatusOK, featureFlag, totalCount)
+	// TODO: check if again, it is terrible
+	// Convert featureFlag to []interface{}
+	interfaceSlice := make([]interface{}, len(featureFlag))
+	for i, v := range featureFlag {
+		interfaceSlice[i] = v
+	}
+
+	return response.PaginationHandler(interfaceSlice, totalCount)
 }

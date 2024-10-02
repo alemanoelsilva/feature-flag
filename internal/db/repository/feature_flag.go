@@ -35,6 +35,19 @@ func (s *SqlRepository) GetFeatureFlag(filters model.FeatureFlagFilters, paginat
 		query.Where("feature_flags.name = ?", filters.Name)
 	}
 
+	// this is an optional filter, it can be true/false or not be sent
+	if filters.IsActive != nil {
+		query.Where("feature_flags.is_active = ?", *filters.IsActive)
+	}
+
+	if filters.ID != 0 {
+		query.Where("feature_flags.id = ?", filters.ID)
+	}
+
+	if filters.PersonID != 0 {
+		query.Where("feature_flags.person_id = ?", filters.PersonID)
+	}
+
 	// get total count
 	var totalCount int64
 	if err := query.Count(&totalCount).Error; err != nil {

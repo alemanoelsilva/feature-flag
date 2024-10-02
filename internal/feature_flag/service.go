@@ -56,7 +56,7 @@ func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, pers
 	})
 }
 
-func (ff *FeatureFlagService) GetFeatureFlag(page int, limit int) ([]entity.FeatureFlagResponse, int64, error) {
+func (ff *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, isActive *bool, id uint, personId uint) ([]entity.FeatureFlagResponse, int64, error) {
 	ff.Logger.Info().Msg("Getting Feature Flag")
 
 	var pagination model.Pagination
@@ -64,6 +64,11 @@ func (ff *FeatureFlagService) GetFeatureFlag(page int, limit int) ([]entity.Feat
 	pagination.Limit = limit
 
 	var filters model.FeatureFlagFilters
+	filters.Name = name
+	filters.IsActive = isActive
+	filters.ID = id
+	filters.PersonID = personId
+
 	featureFlags, totalCount, err := ff.Repository.GetFeatureFlag(filters, pagination)
 	if err != nil {
 		return nil, 0, err

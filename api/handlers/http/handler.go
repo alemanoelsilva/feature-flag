@@ -3,6 +3,7 @@ package http
 import (
 	"ff/api/handlers/http/middlewares"
 	featureflag "ff/internal/feature_flag"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
@@ -38,8 +39,8 @@ func (s ResponseJSON) SuccessHandler(code int, data interface{}) error {
 	return s.c.JSON(code, data)
 }
 
-func (s ResponseJSON) PaginationHandler(code int, data interface{}, totalCount int64) error {
-	return s.c.JSON(code, map[string]interface{}{
+func (s ResponseJSON) PaginationHandler(data []interface{}, totalCount int64) error {
+	return s.c.JSON(http.StatusOK, map[string]interface{}{
 		"items": data,
 		"total": totalCount,
 	})

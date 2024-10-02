@@ -10,7 +10,7 @@ import (
 
 type FeatureFlagRepository interface {
 	AddFeatureFlag(featureFlag model.FeatureFlag) error
-	GetFeatureFlag(pagination model.Pagination, filters model.FeatureFlagFilters) ([]model.FeatureFlag, int64, error)
+	GetFeatureFlag(filters model.FeatureFlagFilters, pagination model.Pagination) ([]model.FeatureFlag, int64, error)
 }
 
 type SqlRepository struct {
@@ -27,7 +27,7 @@ func (s *SqlRepository) AddFeatureFlag(featureFlag model.FeatureFlag) error {
 	return nil
 }
 
-func (s *SqlRepository) GetFeatureFlag(pagination model.Pagination, filters model.FeatureFlagFilters) ([]model.FeatureFlag, int64, error) {
+func (s *SqlRepository) GetFeatureFlag(filters model.FeatureFlagFilters, pagination model.Pagination) ([]model.FeatureFlag, int64, error) {
 	query := s.DB.Debug().Model(&model.FeatureFlag{}).InnerJoins("Person")
 
 	// apply filters

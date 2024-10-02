@@ -29,9 +29,9 @@ func (m *MockRepository) AddFeatureFlag(flag model.FeatureFlag) error {
 	return args.Error(0)
 }
 
-func (m *MockRepository) GetFeatureFlag(filters *model.FeatureFlagFilters) ([]model.FeatureFlag, error) {
-	args := m.Called(filters)
-	return args.Get(0).([]model.FeatureFlag), args.Error(1)
+func (m *MockRepository) GetFeatureFlag(filters model.FeatureFlagFilters, pagination model.Pagination) ([]model.FeatureFlag, int64, error) {
+	args := m.Called(filters, pagination)
+	return args.Get(0).([]model.FeatureFlag), int64(args.Get(1).(int)), args.Error(2)
 }
 
 // Create Feature Flag Tests Cases
@@ -51,9 +51,17 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
+		filtersMock := mock.MatchedBy(func(filters model.FeatureFlagFilters) bool {
+			return filters.Name == "TEST_FLAG_NAME"
+		})
+		paginationMock := mock.MatchedBy(func(pagination model.Pagination) bool {
+			return pagination.Page == 1 && pagination.Limit == 1
+		})
+		featureFlagMock := mock.AnythingOfType("model.FeatureFlag")
+
 		mockRepository := new(MockRepository)
-		mockRepository.On("GetFeatureFlag", mock.AnythingOfType("*model.FeatureFlagFilters")).Return([]model.FeatureFlag{}, nil)
-		mockRepository.On("AddFeatureFlag", mock.AnythingOfType("model.FeatureFlag")).Return(nil)
+		mockRepository.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 0, nil)
+		mockRepository.On("AddFeatureFlag", featureFlagMock).Return(nil)
 
 		mockLogger := zerolog.New(os.Stdout)
 
@@ -75,8 +83,8 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
 		assert.JSONEq(t, `{"message":"Feature Flag Created"}`, rec.Body.String())
 
-		mockRepository.AssertCalled(t, "GetFeatureFlag", mock.Anything)
-		mockRepository.AssertCalled(t, "AddFeatureFlag", mock.Anything)
+		mockRepository.AssertCalled(t, "GetFeatureFlag", filtersMock, paginationMock)
+		mockRepository.AssertCalled(t, "AddFeatureFlag", featureFlagMock)
 	})
 
 	t.Run("Missing PersonId", func(t *testing.T) {
@@ -156,9 +164,17 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
+		filtersMock := mock.MatchedBy(func(filters model.FeatureFlagFilters) bool {
+			return filters.Name == "TEST_FLAG_NAME"
+		})
+		paginationMock := mock.MatchedBy(func(pagination model.Pagination) bool {
+			return pagination.Page == 1 && pagination.Limit == 1
+		})
+		featureFlagMock := mock.AnythingOfType("model.FeatureFlag")
+
 		mockRepository := new(MockRepository)
-		mockRepository.On("GetFeatureFlag", mock.AnythingOfType("*model.FeatureFlagFilters")).Return([]model.FeatureFlag{}, nil)
-		mockRepository.On("AddFeatureFlag", mock.AnythingOfType("model.FeatureFlag")).Return(errors.New("add repository error"))
+		mockRepository.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 0, nil)
+		mockRepository.On("AddFeatureFlag", featureFlagMock).Return(errors.New("add repository error"))
 
 		mockLogger := zerolog.New(os.Stdout)
 
@@ -180,8 +196,8 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 		assert.JSONEq(t, `{"error":"add repository error"}`, rec.Body.String())
 
-		mockRepository.AssertCalled(t, "GetFeatureFlag", mock.Anything)
-		mockRepository.AssertCalled(t, "AddFeatureFlag", mock.Anything)
+		mockRepository.AssertCalled(t, "GetFeatureFlag", filtersMock, paginationMock)
+		mockRepository.AssertCalled(t, "AddFeatureFlag", featureFlagMock)
 	})
 
 	t.Run("Get Repository Error", func(t *testing.T) {
@@ -193,8 +209,15 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
+		filtersMock := mock.MatchedBy(func(filters model.FeatureFlagFilters) bool {
+			return filters.Name == "TEST_FLAG_NAME"
+		})
+		paginationMock := mock.MatchedBy(func(pagination model.Pagination) bool {
+			return pagination.Page == 1 && pagination.Limit == 1
+		})
+
 		mockRepository := new(MockRepository)
-		mockRepository.On("GetFeatureFlag", mock.AnythingOfType("*model.FeatureFlagFilters")).Return([]model.FeatureFlag{}, errors.New("get repository error"))
+		mockRepository.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 0, errors.New("get repository error"))
 
 		mockLogger := zerolog.New(os.Stdout)
 
@@ -216,7 +239,7 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 		assert.JSONEq(t, `{"error":"get repository error"}`, rec.Body.String())
 
-		mockRepository.AssertCalled(t, "GetFeatureFlag", mock.Anything)
+		mockRepository.AssertCalled(t, "GetFeatureFlag", filtersMock, paginationMock)
 		mockRepository.AssertNotCalled(t, "AddFeatureFlag")
 	})
 }

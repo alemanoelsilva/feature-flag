@@ -17,6 +17,7 @@ var AppConfig *EnvConfig
 func LoadAppConfig(logger *zerolog.Logger) {
 	logger.Info().Msg("Loading Server Configurations...")
 
+	// comment this out when running in debug mode
 	if err := godotenv.Load(); err != nil {
 		logger.Fatal().Err(err).Msg("Error loading .env file")
 	}

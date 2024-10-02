@@ -33,10 +33,10 @@ func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, pers
 	filters.Name = request.Name
 
 	var pagination model.Pagination
-	pagination.Page = 0
+	pagination.Page = 1
 	pagination.Limit = 1
 
-	_, totalCount, err := ff.Repository.GetFeatureFlag(pagination, filters)
+	_, totalCount, err := ff.Repository.GetFeatureFlag(filters, pagination)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (ff *FeatureFlagService) GetFeatureFlag(page int, limit int) ([]entity.Feat
 	pagination.Limit = limit
 
 	var filters model.FeatureFlagFilters
-	featureFlags, totalCount, err := ff.Repository.GetFeatureFlag(pagination, filters)
+	featureFlags, totalCount, err := ff.Repository.GetFeatureFlag(filters, pagination)
 	if err != nil {
 		return nil, 0, err
 	}

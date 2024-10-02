@@ -23,9 +23,9 @@ func (m *MockRepository) AddFeatureFlag(flag model.FeatureFlag) error {
 	return args.Error(0)
 }
 
-func (m *MockRepository) GetFeatureFlag(filters *model.FeatureFlagFilters) ([]model.FeatureFlag, error) {
-	args := m.Called(filters)
-	return args.Get(0).([]model.FeatureFlag), args.Error(1)
+func (m *MockRepository) GetFeatureFlag(filters model.FeatureFlagFilters, pagination model.Pagination) ([]model.FeatureFlag, int64, error) {
+	args := m.Called(filters, pagination)
+	return args.Get(0).([]model.FeatureFlag), int64(args.Get(1).(int)), args.Error(2)
 }
 
 // Create Feature Flag Tests Cases
@@ -41,8 +41,12 @@ func TestCreateFeatureFlag(t *testing.T) {
 			IsActive:    true,
 		}
 
-		mockRepo.On("GetFeatureFlag", mock.AnythingOfType("*model.FeatureFlagFilters")).Return([]model.FeatureFlag{}, nil)
-		mockRepo.On("AddFeatureFlag", mock.AnythingOfType("model.FeatureFlag")).Return(nil)
+		filtersMock := mock.AnythingOfType("model.FeatureFlagFilters")
+		paginationMock := mock.AnythingOfType("model.Pagination")
+		featureFlagMock := mock.AnythingOfType("model.FeatureFlag")
+
+		mockRepo.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 0, nil)
+		mockRepo.On("AddFeatureFlag", featureFlagMock).Return(nil)
 
 		err := service.CreateFeatureFlag(request, 1)
 
@@ -63,9 +67,12 @@ func TestCreateFeatureFlag(t *testing.T) {
 			ExpirationDate: expirationDate,
 		}
 
-		mockRepo.On("GetFeatureFlag", mock.AnythingOfType("*model.FeatureFlagFilters")).Return([]model.FeatureFlag{}, nil)
-		mockRepo.On("AddFeatureFlag", mock.AnythingOfType("model.FeatureFlag")).Return(nil)
+		filtersMock := mock.AnythingOfType("model.FeatureFlagFilters")
+		paginationMock := mock.AnythingOfType("model.Pagination")
+		featureFlagMock := mock.AnythingOfType("model.FeatureFlag")
 
+		mockRepo.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 0, nil)
+		mockRepo.On("AddFeatureFlag", featureFlagMock).Return(nil)
 		err := service.CreateFeatureFlag(request, 1)
 
 		assert.NoError(t, err)
@@ -85,11 +92,10 @@ func TestCreateFeatureFlag(t *testing.T) {
 			ExpirationDate: expirationDate,
 		}
 
-		mockRepo.On("GetFeatureFlag", mock.AnythingOfType("*model.FeatureFlagFilters")).Return([]model.FeatureFlag{{
-			Name:        request.Name,
-			Description: request.Description,
-			IsActive:    request.IsActive,
-		}}, nil)
+		filtersMock := mock.AnythingOfType("model.FeatureFlagFilters")
+		paginationMock := mock.AnythingOfType("model.Pagination")
+
+		mockRepo.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 1, nil)
 
 		err := service.CreateFeatureFlag(request, 1)
 

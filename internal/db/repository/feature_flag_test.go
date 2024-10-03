@@ -19,6 +19,8 @@ type TestSqlRepository struct {
 	repo   *SqlRepository
 }
 
+var personOnDB []model.Person
+
 func TestFeatureFlagRepository(t *testing.T) {
 	suite.Run(t, new(TestSqlRepository))
 }
@@ -39,6 +41,24 @@ func (s *TestSqlRepository) SetupTest() {
 	s.db = db
 	s.logger = &logger
 	s.repo = &SqlRepository{DB: db, Logger: &logger}
+
+	// insert person as pre requisite
+	personOnDB = []model.Person{
+		{
+			Name:  "Test Person 1",
+			Email: "test@example.com",
+		},
+		{
+			Name:  "Test Person 2",
+			Email: "test@example.com",
+		},
+	}
+	s.db.Debug().CreateInBatches(personOnDB, len(personOnDB))
+	db = s.db.First(&personOnDB[0], "name = ?", personOnDB[0].Name)
+	s.Require().NoError(db.Error)
+	db = s.db.First(&personOnDB[1], "name = ?", personOnDB[1].Name)
+	s.Require().NoError(db.Error)
+
 }
 
 func (s *TestSqlRepository) TearDownTest() {
@@ -49,7 +69,6 @@ func (s *TestSqlRepository) TearDownTest() {
 
 // Create Feature Flag Tests Cases
 func (s *TestSqlRepository) TestAddFeatureFlag() {
-	// Test case 1: Successfully add a feature flag
 	s.Run("Successfully add feature flag", func() {
 		featureFlag := model.FeatureFlag{
 			Name:        "Test Flag",
@@ -71,7 +90,6 @@ func (s *TestSqlRepository) TestAddFeatureFlag() {
 		// s.Equal(featureFlag.Person.ID, savedFlag.Person.ID)
 	})
 
-	// Test case 2: Attempt to add a duplicate feature flag
 	s.Run("Fail to add duplicate feature flag", func() {
 		featureFlag := model.FeatureFlag{
 			Name:        "Duplicate Flag",
@@ -93,37 +111,33 @@ func (s *TestSqlRepository) TestAddFeatureFlag() {
 
 // Get Feature Flag Tests Cases
 func (s *TestSqlRepository) TestGetFeatureFlag() {
+	featureFlagsOnDB := []model.FeatureFlag{
+		{
+			Name:        "Test Flag 1",
+			Description: "Test Description 1",
+			IsActive:    true,
+			PersonID:    personOnDB[0].ID,
+		},
+		{
+			Name:        "Test Flag 2",
+			Description: "Test Description 2",
+			IsActive:    false,
+			PersonID:    personOnDB[0].ID,
+		},
+		{
+			Name:        "Test Flag 3",
+			Description: "Test Description 3",
+			IsActive:    true,
+			PersonID:    personOnDB[1].ID,
+		}}
+
+	s.db.CreateInBatches(featureFlagsOnDB, len(featureFlagsOnDB))
+	var featureFlagTest []model.FeatureFlag
+	db := s.db.Debug().Find(&featureFlagTest)
+	s.Require().NoError(db.Error)
+	s.Require().Equal(len(featureFlagsOnDB), len(featureFlagTest))
+
 	s.Run("Get feature flags without filters", func() {
-		personOnDB := model.Person{
-			Name:  "Test Person",
-			Email: "test@example.com",
-		}
-		s.db.Create(&personOnDB)
-		db := s.db.First(&personOnDB, "name = ?", personOnDB.Name)
-		s.Require().NoError(db.Error)
-
-		featureFlagsOnDB := []model.FeatureFlag{
-			{
-				Name:        "Test Flag 1",
-				Description: "Test Description 1",
-				IsActive:    true,
-				PersonID:    personOnDB.ID,
-			},
-			{
-				Name:        "Test Flag 2",
-				Description: "Test Description 2",
-				IsActive:    false,
-				PersonID:    personOnDB.ID,
-			},
-			{
-				Name:        "Test Flag 3",
-				Description: "Test Description 3",
-				IsActive:    true,
-				PersonID:    personOnDB.ID,
-			}}
-
-		s.db.CreateInBatches(featureFlagsOnDB, len(featureFlagsOnDB))
-
 		var filters model.FeatureFlagFilters
 		var pagination model.Pagination
 		pagination.Page = 1
@@ -139,36 +153,6 @@ func (s *TestSqlRepository) TestGetFeatureFlag() {
 	})
 
 	s.Run("Get feature flags without filters (page 1)", func() {
-		personOnDB := model.Person{
-			Name:  "Test Person",
-			Email: "test@example.com",
-		}
-		s.db.Create(&personOnDB)
-		db := s.db.First(&personOnDB, "name = ?", personOnDB.Name)
-		s.Require().NoError(db.Error)
-
-		featureFlagsOnDB := []model.FeatureFlag{
-			{
-				Name:        "Test Flag 1",
-				Description: "Test Description 1",
-				IsActive:    true,
-				PersonID:    personOnDB.ID,
-			},
-			{
-				Name:        "Test Flag 2",
-				Description: "Test Description 2",
-				IsActive:    false,
-				PersonID:    personOnDB.ID,
-			},
-			{
-				Name:        "Test Flag 3",
-				Description: "Test Description 3",
-				IsActive:    true,
-				PersonID:    personOnDB.ID,
-			}}
-
-		s.db.CreateInBatches(featureFlagsOnDB, len(featureFlagsOnDB))
-
 		var filters model.FeatureFlagFilters
 		var pagination model.Pagination
 		pagination.Page = 1
@@ -182,36 +166,6 @@ func (s *TestSqlRepository) TestGetFeatureFlag() {
 	})
 
 	s.Run("Get feature flags without filters (page 2)", func() {
-		personOnDB := model.Person{
-			Name:  "Test Person",
-			Email: "test@example.com",
-		}
-		s.db.Create(&personOnDB)
-		db := s.db.First(&personOnDB, "name = ?", personOnDB.Name)
-		s.Require().NoError(db.Error)
-
-		featureFlagsOnDB := []model.FeatureFlag{
-			{
-				Name:        "Test Flag 1",
-				Description: "Test Description 1",
-				IsActive:    true,
-				PersonID:    personOnDB.ID,
-			},
-			{
-				Name:        "Test Flag 2",
-				Description: "Test Description 2",
-				IsActive:    false,
-				PersonID:    personOnDB.ID,
-			},
-			{
-				Name:        "Test Flag 3",
-				Description: "Test Description 3",
-				IsActive:    true,
-				PersonID:    personOnDB.ID,
-			}}
-
-		s.db.CreateInBatches(featureFlagsOnDB, len(featureFlagsOnDB))
-
 		var filters model.FeatureFlagFilters
 		var pagination model.Pagination
 		pagination.Page = 2
@@ -225,36 +179,6 @@ func (s *TestSqlRepository) TestGetFeatureFlag() {
 	})
 
 	s.Run("Get feature flags without filters (page 3)", func() {
-		personOnDB := model.Person{
-			Name:  "Test Person",
-			Email: "test@example.com",
-		}
-		s.db.Create(&personOnDB)
-		db := s.db.First(&personOnDB, "name = ?", personOnDB.Name)
-		s.Require().NoError(db.Error)
-
-		featureFlagsOnDB := []model.FeatureFlag{
-			{
-				Name:        "Test Flag 1",
-				Description: "Test Description 1",
-				IsActive:    true,
-				PersonID:    personOnDB.ID,
-			},
-			{
-				Name:        "Test Flag 2",
-				Description: "Test Description 2",
-				IsActive:    false,
-				PersonID:    personOnDB.ID,
-			},
-			{
-				Name:        "Test Flag 3",
-				Description: "Test Description 3",
-				IsActive:    true,
-				PersonID:    personOnDB.ID,
-			}}
-
-		s.db.CreateInBatches(featureFlagsOnDB, len(featureFlagsOnDB))
-
 		var filters model.FeatureFlagFilters
 		var pagination model.Pagination
 		pagination.Page = 3
@@ -267,37 +191,7 @@ func (s *TestSqlRepository) TestGetFeatureFlag() {
 		s.Require().Equal(totalCount, int64(3))
 	})
 
-	s.Run("Get feature flags without filters", func() {
-		personOnDB := model.Person{
-			Name:  "Test Person",
-			Email: "test@example.com",
-		}
-		s.db.Create(&personOnDB)
-		db := s.db.First(&personOnDB, "name = ?", personOnDB.Name)
-		s.Require().NoError(db.Error)
-
-		featureFlagsOnDB := []model.FeatureFlag{
-			{
-				Name:        "Test Flag 1",
-				Description: "Test Description 1",
-				IsActive:    true,
-				PersonID:    personOnDB.ID,
-			},
-			{
-				Name:        "Test Flag 2",
-				Description: "Test Description 2",
-				IsActive:    false,
-				PersonID:    personOnDB.ID,
-			},
-			{
-				Name:        "Test Flag 3",
-				Description: "Test Description 3",
-				IsActive:    true,
-				PersonID:    personOnDB.ID,
-			}}
-
-		s.db.CreateInBatches(featureFlagsOnDB, len(featureFlagsOnDB))
-
+	s.Run("Get feature flags with name filter", func() {
 		var filters model.FeatureFlagFilters
 		filters.Name = featureFlagsOnDB[2].Name
 		var pagination model.Pagination
@@ -310,4 +204,49 @@ func (s *TestSqlRepository) TestGetFeatureFlag() {
 		s.Require().Equal(featureFlagsOnDB[2].Name, featureFlags[0].Name)
 		s.Require().Equal(totalCount, int64(1))
 	})
+
+	s.Run("Get feature flags with isActive filter", func() {
+		var filters model.FeatureFlagFilters
+		active := true
+		filters.IsActive = &active
+		var pagination model.Pagination
+		pagination.Page = 1
+		pagination.Limit = 10
+
+		featureFlags, totalCount, err := s.repo.GetFeatureFlag(filters, pagination)
+		s.Require().NoError(err)
+		s.Require().Equal(2, len(featureFlags))
+		s.Require().Equal(featureFlagsOnDB[0].Name, featureFlags[0].Name)
+		s.Require().Equal(featureFlagsOnDB[2].Name, featureFlags[1].Name)
+		s.Require().Equal(totalCount, int64(2))
+	})
+
+	s.Run("Get feature flags with id filter", func() {
+		var filters model.FeatureFlagFilters
+		filters.ID = 1
+		var pagination model.Pagination
+		pagination.Page = 1
+		pagination.Limit = 10
+
+		featureFlags, totalCount, err := s.repo.GetFeatureFlag(filters, pagination)
+		s.Require().NoError(err)
+		s.Require().Equal(1, len(featureFlags))
+		s.Require().Equal(featureFlagsOnDB[0].Name, featureFlags[0].Name)
+		s.Require().Equal(totalCount, int64(1))
+	})
+
+	s.Run("Get feature flags with personId filter", func() {
+		var filters model.FeatureFlagFilters
+		filters.PersonID = personOnDB[1].ID
+		var pagination model.Pagination
+		pagination.Page = 1
+		pagination.Limit = 10
+
+		featureFlags, totalCount, err := s.repo.GetFeatureFlag(filters, pagination)
+		s.Require().NoError(err)
+		s.Require().Equal(1, len(featureFlags))
+		s.Require().Equal(featureFlagsOnDB[2].Name, featureFlags[0].Name)
+		s.Require().Equal(totalCount, int64(1))
+	})
+
 }

@@ -34,6 +34,27 @@ func (ff *FeatureFlag) Validate() error {
 			return errors.New("expirationDate must be in YYYY-MM-DD format")
 		}
 	}
+
+	return nil
+}
+
+type UpdateFeatureFlag struct {
+	Description    string `json:"description"`
+	IsActive       bool   `json:"isActive"`
+	ExpirationDate string `json:"expirationDate"`
+}
+
+func (ff *UpdateFeatureFlag) Validate() error {
+	if ff.Description == "" {
+		return errors.New("description is required")
+	}
+
+	if ff.ExpirationDate != "" {
+		if _, err := time.Parse(time.DateOnly, ff.ExpirationDate); err != nil {
+			return errors.New("expirationDate must be in YYYY-MM-DD format")
+		}
+	}
+
 	return nil
 }
 

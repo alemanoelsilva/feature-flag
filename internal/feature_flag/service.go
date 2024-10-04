@@ -94,3 +94,17 @@ func (ff *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, i
 
 	return featureFlagResponses, totalCount, nil
 }
+
+func (ff *FeatureFlagService) UpdateFeatureFlagById(id uint, request entity.UpdateFeatureFlag) error {
+	ff.Logger.Info().Msg("Updating a Feature Flag")
+
+	if err := request.Validate(); err != nil {
+		return errors.New(err.Error())
+	}
+
+	return ff.Repository.UpdateFeatureFlagById(id, model.UpdateFeatureFlag{
+		Description:    request.Description,
+		IsActive:       request.IsActive,
+		ExpirationDate: request.ExpirationDate,
+	})
+}

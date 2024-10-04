@@ -34,6 +34,11 @@ func (m *MockRepository) GetFeatureFlag(filters model.FeatureFlagFilters, pagina
 	return args.Get(0).([]model.FeatureFlag), int64(args.Get(1).(int)), args.Error(2)
 }
 
+func (m *MockRepository) UpdateFeatureFlagById(id uint, featureFlag model.UpdateFeatureFlag) error {
+	args := m.Called(id, featureFlag)
+	return args.Error(0)
+}
+
 // Create Feature Flag Tests Cases
 func TestCreateFeatureFlagHandler(t *testing.T) {
 	validFeatureFlagBody := entity.FeatureFlag{

@@ -32,6 +32,7 @@ func getPersonIdFromHeaders(c echo.Context) (uint, error) {
 func LoadFeatureFlagsRoutes(router *echo.Echo, handler *EchoHandler) {
 	router.POST("/api/feature-flags/v1/feature-flags", handler.createFeatureFlagHandler)
 	router.GET("/api/feature-flags/v1/feature-flags", handler.getFeatureFlagHandler)
+	router.PUT("/api/feature-flags/v1/feature-flags/:id", handler.updateFeatureFlagByIdHandler)
 }
 
 func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
@@ -107,4 +108,37 @@ func (e *EchoHandler) getFeatureFlagHandler(c echo.Context) error {
 	}
 
 	return response.PaginationHandler(interfaceSlice, totalCount)
+}
+
+func (e *EchoHandler) updateFeatureFlagByIdHandler(c echo.Context) error {
+	response := ResponseJSON{c: c}
+
+	// bind the json body to the struct, but it's not working when the body comes from the test case
+	// var input entity.FeatureFlag
+	// if err := c.Bind(&input); err != nil {
+	// 	return response.ErrorHandler(http.StatusBadRequest, err)
+	// }
+
+	// manually decoding the json body
+	var input entity.UpdateFeatureFlag
+	body, err := io.ReadAll(c.Request().Body)
+	if err != nil {
+		return response.ErrorHandler(http.StatusBadRequest, err)
+	}
+	if err := json.Unmarshal(body, &input); err != nil {
+		return response.ErrorHandler(http.StatusBadRequest, err)
+	}
+
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	// personId, err := getPersonIdFromHeaders(c)
+	// if err != nil {
+	// 	return response.ErrorHandler(http.StatusUnauthorized, err)
+	// }
+
+	if err := e.FeatureFlagService.UpdateFeatureFlagById(uint(id), input); err != nil {
+		return response.ErrorHandler(http.StatusInternalServerError, err)
+	}
+
+	return response.SuccessHandler(http.StatusOK, handleResponseMessage("Feature Flag Updated"))
 }

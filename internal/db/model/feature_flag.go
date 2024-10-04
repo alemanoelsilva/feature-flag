@@ -14,9 +14,23 @@ type FeatureFlag struct {
 	PersonID       uint      `gorm:"column:person_id" json:"person_id"`
 }
 
+func (FeatureFlag) TableName() string {
+	return "feature_flags"
+}
+
 type FeatureFlagFilters struct {
 	ID       uint
 	Name     string
 	IsActive *bool
 	PersonID uint
+}
+
+type UpdateFeatureFlag struct {
+	Description    string `gorm:"update;not null" json:"description"`
+	IsActive       bool   `gorm:"update;not null" json:"is_active"`
+	ExpirationDate string `gorm:"update;null" json:"expiration_date"`
+}
+
+func (UpdateFeatureFlag) TableName() string {
+	return "feature_flags"
 }

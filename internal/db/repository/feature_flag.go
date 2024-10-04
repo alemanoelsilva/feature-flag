@@ -11,6 +11,7 @@ import (
 type FeatureFlagRepository interface {
 	AddFeatureFlag(featureFlag model.FeatureFlag) error
 	GetFeatureFlag(filters model.FeatureFlagFilters, pagination model.Pagination) ([]model.FeatureFlag, int64, error)
+	UpdateFeatureFlagById(id uint, featureFlag model.UpdateFeatureFlag) error
 }
 
 type SqlRepository struct {
@@ -66,4 +67,28 @@ func (s *SqlRepository) GetFeatureFlag(filters model.FeatureFlagFilters, paginat
 	}
 
 	return featureFlags, totalCount, nil
+}
+
+func (s *SqlRepository) UpdateFeatureFlagById(id uint, featureFlag model.UpdateFeatureFlag) error {
+	updateData := map[string]interface{}{
+		"description":     featureFlag.Description,
+		"is_active":       featureFlag.IsActive, // Explicitly include even if false
+		"expiration_date": featureFlag.ExpirationDate,
+	}
+
+	result := s.DB.Debug().
+		Model(&model.UpdateFeatureFlag{}). // Use an empty struct for the model
+		Where("id = ?", id).
+		Updates(updateData)
+
+	// result := s.DB.Debug().Model(&featureFlag).Where("id = ?", id).Updates(&featureFlag)
+	if result.Error != nil {
+		s.Logger.Error().Err(result.Error)
+		return errors.New("error when updating feature flag")
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("no feature flag updated")
+	}
+
+	return nil
 }

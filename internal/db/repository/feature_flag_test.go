@@ -248,5 +248,51 @@ func (s *TestSqlRepository) TestGetFeatureFlag() {
 		s.Require().Equal(featureFlagsOnDB[2].Name, featureFlags[0].Name)
 		s.Require().Equal(totalCount, int64(1))
 	})
+}
 
+// Update Feature Flag By Id Tests Cases
+func (s *TestSqlRepository) TestUpdateFeatureFlagById() {
+	s.Run("Successfully update feature flag by id", func() {
+		featureFlag := model.FeatureFlag{
+			Name:        "Test Flag",
+			Description: "Test Description",
+			IsActive:    true,
+			PersonID:    1,
+		}
+
+		err := s.repo.AddFeatureFlag(featureFlag)
+		s.Require().NoError(err)
+
+		var featureFlagOnDB model.FeatureFlag
+		result := s.db.First(&featureFlagOnDB, "name = ?", featureFlag.Name)
+		s.Require().NoError(result.Error)
+
+		updatedFeatureFlag := model.UpdateFeatureFlag{
+			Description:    featureFlag.Description,
+			IsActive:       false,
+			ExpirationDate: featureFlag.ExpirationDate,
+		}
+		err = s.repo.UpdateFeatureFlagById(featureFlagOnDB.ID, updatedFeatureFlag)
+		s.Require().NoError(err)
+
+		var savedFlag model.FeatureFlag
+		result = s.db.First(&savedFlag, "id = ?", featureFlagOnDB.ID)
+		s.Require().NoError(result.Error)
+		s.Equal(featureFlag.Name, savedFlag.Name)
+		s.Equal(featureFlag.Description, savedFlag.Description)
+		// Verify the feature flag was updated
+		s.Equal(updatedFeatureFlag.IsActive, savedFlag.IsActive)
+		// s.Equal(featureFlag.Person.ID, savedFlag.Person.ID)
+	})
+
+	s.Run("Should no update a non existing feature flag", func() {
+		updatedFeatureFlag := model.UpdateFeatureFlag{
+			Description:    "Description",
+			IsActive:       false,
+			ExpirationDate: "2024-10-10",
+		}
+		err := s.repo.UpdateFeatureFlagById(99, updatedFeatureFlag)
+		s.Require().Error(err)
+		s.Equal("no feature flag updated", err.Error())
+	})
 }

@@ -7,11 +7,14 @@ import (
 	"ff/internal/db/model"
 	featureflag "ff/internal/feature_flag"
 	"ff/internal/feature_flag/entity"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
@@ -251,16 +254,67 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 
 // Get Feature Flag Tests Cases
 func TestGetFeatureFlagHandler(t *testing.T) {
-	validFeatureFlagBody := entity.FeatureFlag{
-		Name:        "TEST_FLAG_NAME",
-		Description: "Test Description",
-		IsActive:    true,
+	queryString := map[string]interface{}{
+		"name":  "TEST_FLAG_NAME",
+		"limit": 10,
+		"page":  1,
+	}
+
+	// Convert queryString to URL query parameters
+	queryParams := url.Values{}
+	for key, value := range queryString {
+		queryParams.Add(key, fmt.Sprintf("%v", value))
+	}
+
+	timeMock := time.Now()
+
+	featureFlagRepositoryMock := []model.FeatureFlag{{
+		ID:             4,
+		Name:           "TEST_FLAG_NAME",
+		Description:    "This is an example feature flag",
+		IsActive:       false,
+		ExpirationDate: "2024-05-09",
+		CreatedAt:      timeMock,
+		UpdatedAt:      timeMock,
+		Person: &model.Person{
+			ID:    1,
+			Name:  "Person Name",
+			Email: "person.email@email.com",
+		},
+	}}
+
+	featureFlagResponse := []entity.FeatureFlagResponse{{
+		ID:             4,
+		Name:           "TEST_FLAG_NAME",
+		Description:    "This is an example feature flag",
+		IsActive:       false,
+		ExpirationDate: "2024-05-09",
+		CreatedAt:      timeMock.Format("2006-01-02 15:04:05"),
+		UpdatedAt:      timeMock.Format("2006-01-02 15:04:05"),
+		Person: entity.PersonResponse{
+			ID:    1,
+			Name:  "Person Name",
+			Email: "person.email@email.com",
+		},
+	}}
+
+	// Create a []interface{} slice
+	featureFlagsInterface := make([]interface{}, len(featureFlagResponse))
+
+	// Loop through featureFlags and assign each element to the []interface{} slice
+	for i, flag := range featureFlagResponse {
+		featureFlagsInterface[i] = flag
+	}
+
+	response := PaginationResponse{
+		Items: featureFlagsInterface,
+		Total: 1,
 	}
 
 	t.Run("Success", func(t *testing.T) {
 		// Setup
 		e := echo.New()
-		req := httptest.NewRequest(http.MethodGet, "/api/feature-flags/v1/feature-flags", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/feature-flags/v1/feature-flags?"+queryParams.Encode(), nil)
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Personid", "123")
 		rec := httptest.NewRecorder()
@@ -270,13 +324,11 @@ func TestGetFeatureFlagHandler(t *testing.T) {
 			return filters.Name == "TEST_FLAG_NAME"
 		})
 		paginationMock := mock.MatchedBy(func(pagination model.Pagination) bool {
-			return pagination.Page == 1 && pagination.Limit == 1
+			return pagination.Page == 1 && pagination.Limit == 10
 		})
-		featureFlagMock := mock.AnythingOfType("model.FeatureFlag")
 
 		mockRepository := new(MockRepository)
-		mockRepository.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 0, nil)
-		mockRepository.On("AddFeatureFlag", featureFlagMock).Return(nil)
+		mockRepository.On("GetFeatureFlag", filtersMock, paginationMock).Return(featureFlagRepositoryMock, 1, nil)
 
 		mockLogger := zerolog.New(os.Stdout)
 
@@ -287,18 +339,23 @@ func TestGetFeatureFlagHandler(t *testing.T) {
 			},
 		}
 
-		inputJSON, _ := json.Marshal(validFeatureFlagBody)
-		c.Request().Body = io.NopCloser(bytes.NewBuffer(inputJSON))
-
 		// Perform request
-		err := handler.createFeatureFlagHandler(c)
+		err := handler.getFeatureFlagHandler(c)
 
 		// Assertions
 		assert.NoError(t, err)
-		assert.Equal(t, http.StatusCreated, rec.Code)
-		assert.JSONEq(t, `{"message":"Feature Flag Created"}`, rec.Body.String())
+		assert.Equal(t, http.StatusOK, rec.Code)
+
+		// Convert rec.Body to a map (for dynamic JSON)
+		var responseBody PaginationResponse
+		if err := json.Unmarshal(rec.Body.Bytes(), &responseBody); err != nil {
+			fmt.Println("Error decoding JSON:", err)
+		}
+
+		assert.Equal(t, response.Total, responseBody.Total)
+		// TODO: check how to cast interface{} to model.FeatureFlagResponse
+		// assert.Equal(t, featureFlagResponse[0].Name, responseBody.Items[0].Name)
 
 		mockRepository.AssertCalled(t, "GetFeatureFlag", filtersMock, paginationMock)
-		mockRepository.AssertCalled(t, "AddFeatureFlag", featureFlagMock)
 	})
 }

@@ -8,6 +8,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type PaginationResponse struct {
+	Items []interface{} `json:"items"`
+	Total int           `json:"total"`
+}
+
 type EchoHandler struct {
 	FeatureFlagService featureflag.FeatureFlagService
 }
@@ -40,9 +45,9 @@ func (s ResponseJSON) SuccessHandler(code int, data interface{}) error {
 }
 
 func (s ResponseJSON) PaginationHandler(data []interface{}, totalCount int64) error {
-	return s.c.JSON(http.StatusOK, map[string]interface{}{
-		"items": data,
-		"total": totalCount,
+	return s.c.JSON(http.StatusOK, PaginationResponse{
+		Items: data,
+		Total: int(totalCount),
 	})
 }
 

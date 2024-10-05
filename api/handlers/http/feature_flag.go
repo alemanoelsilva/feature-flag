@@ -75,7 +75,7 @@ func (e *EchoHandler) getFeatureFlagHandler(c echo.Context) error {
 	personId, _ := strconv.Atoi(c.QueryParam("personId"))
 	name := c.QueryParam("name")
 
-	// TODO: check if again, it is terrible
+	// TODO: check it again, it is terrible
 	isActiveStr := c.QueryParam("isActive")
 	var isActive *bool
 	if isActiveStr == "true" {
@@ -100,7 +100,7 @@ func (e *EchoHandler) getFeatureFlagHandler(c echo.Context) error {
 		return response.ErrorHandler(http.StatusInternalServerError, err)
 	}
 
-	// TODO: check if again, it is terrible
+	// TODO: check it again, it is terrible
 	// Convert featureFlag to []interface{}
 	interfaceSlice := make([]interface{}, len(featureFlag))
 	for i, v := range featureFlag {

@@ -58,7 +58,6 @@ func (s *TestSqlRepository) SetupTest() {
 	s.Require().NoError(db.Error)
 	db = s.db.First(&personOnDB[1], "name = ?", personOnDB[1].Name)
 	s.Require().NoError(db.Error)
-
 }
 
 func (s *TestSqlRepository) TearDownTest() {

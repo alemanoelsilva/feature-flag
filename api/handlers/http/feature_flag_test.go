@@ -250,3 +250,55 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 }
 
 // Get Feature Flag Tests Cases
+func TestGetFeatureFlagHandler(t *testing.T) {
+	validFeatureFlagBody := entity.FeatureFlag{
+		Name:        "TEST_FLAG_NAME",
+		Description: "Test Description",
+		IsActive:    true,
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		// Setup
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodGet, "/api/feature-flags/v1/feature-flags", nil)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Personid", "123")
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		filtersMock := mock.MatchedBy(func(filters model.FeatureFlagFilters) bool {
+			return filters.Name == "TEST_FLAG_NAME"
+		})
+		paginationMock := mock.MatchedBy(func(pagination model.Pagination) bool {
+			return pagination.Page == 1 && pagination.Limit == 1
+		})
+		featureFlagMock := mock.AnythingOfType("model.FeatureFlag")
+
+		mockRepository := new(MockRepository)
+		mockRepository.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 0, nil)
+		mockRepository.On("AddFeatureFlag", featureFlagMock).Return(nil)
+
+		mockLogger := zerolog.New(os.Stdout)
+
+		handler := &EchoHandler{
+			FeatureFlagService: featureflag.FeatureFlagService{
+				Repository: mockRepository,
+				Logger:     &mockLogger,
+			},
+		}
+
+		inputJSON, _ := json.Marshal(validFeatureFlagBody)
+		c.Request().Body = io.NopCloser(bytes.NewBuffer(inputJSON))
+
+		// Perform request
+		err := handler.createFeatureFlagHandler(c)
+
+		// Assertions
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusCreated, rec.Code)
+		assert.JSONEq(t, `{"message":"Feature Flag Created"}`, rec.Body.String())
+
+		mockRepository.AssertCalled(t, "GetFeatureFlag", filtersMock, paginationMock)
+		mockRepository.AssertCalled(t, "AddFeatureFlag", featureFlagMock)
+	})
+}

@@ -359,3 +359,59 @@ func TestGetFeatureFlagHandler(t *testing.T) {
 		mockRepository.AssertCalled(t, "GetFeatureFlag", filtersMock, paginationMock)
 	})
 }
+
+// Update Feature Flag By ID Tests Cases
+func TestUpdateFeatureFlagByIdHandler(t *testing.T) {
+	featureFlagBody := entity.UpdateFeatureFlag{
+		Description:    "This is an example feature flag",
+		IsActive:       false,
+		ExpirationDate: "2024-05-09",
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		featureFlagId := 1
+		// Setup
+		e := echo.New()
+		url := fmt.Sprintf("/api/feature-flags/v1/feature-flags/%d", featureFlagId)
+		req := httptest.NewRequest(http.MethodGet, url, nil)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Personid", "123")
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		featureFlagToUpdate := model.UpdateFeatureFlag{
+			Description:    "This is an example feature flag",
+			IsActive:       false,
+			ExpirationDate: "2024-05-09",
+		}
+
+		mockRepository := new(MockRepository)
+		mockRepository.On("UpdateFeatureFlagById", uint(featureFlagId), featureFlagToUpdate).Return(nil)
+
+		mockLogger := zerolog.New(os.Stdout)
+
+		handler := &EchoHandler{
+			FeatureFlagService: featureflag.FeatureFlagService{
+				Repository: mockRepository,
+				Logger:     &mockLogger,
+			},
+		}
+
+		inputJSON, _ := json.Marshal(featureFlagBody)
+		c.Request().Body = io.NopCloser(bytes.NewBuffer(inputJSON))
+
+		// Set the path parameters, for example setting the `:id` parameter
+		c.SetParamNames("id")
+		c.SetParamValues(fmt.Sprintf("%d", featureFlagId))
+
+		// Perform request
+		err := handler.updateFeatureFlagByIdHandler(c)
+
+		// Assertions
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.JSONEq(t, `{"message":"Feature Flag Updated"}`, rec.Body.String())
+
+		mockRepository.AssertCalled(t, "UpdateFeatureFlagById", uint(featureFlagId), featureFlagToUpdate)
+	})
+}

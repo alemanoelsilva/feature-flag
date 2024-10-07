@@ -86,6 +86,7 @@ func (s *SqlRepository) UpdateFeatureFlagById(id uint, featureFlag model.UpdateF
 		s.Logger.Error().Err(result.Error)
 		return errors.New("error when updating feature flag")
 	}
+	// TODO: RowsAffected can be NotFound or Model with no updated values
 	if result.RowsAffected == 0 {
 		return errors.New("no feature flag updated")
 	}

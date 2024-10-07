@@ -22,8 +22,8 @@ func LoadService(r repo.FeatureFlagRepository, l *zerolog.Logger) *FeatureFlagSe
 	}
 }
 
-func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, personId uint) error {
-	ff.Logger.Info().Msg("Creating a new Feature Flag")
+func (ffs *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, personId uint) error {
+	ffs.Logger.Info().Msg("Creating a new Feature Flag")
 
 	if err := request.Validate(); err != nil {
 		return errors.New(err.Error())
@@ -36,7 +36,7 @@ func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, pers
 	pagination.Page = 1
 	pagination.Limit = 1
 
-	_, totalCount, err := ff.Repository.GetFeatureFlag(filters, pagination)
+	_, totalCount, err := ffs.Repository.GetFeatureFlag(filters, pagination)
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, pers
 		return errors.New("feature flag already exists")
 	}
 
-	return ff.Repository.AddFeatureFlag(model.FeatureFlag{
+	return ffs.Repository.AddFeatureFlag(model.FeatureFlag{
 		ID:             request.ID,
 		Name:           request.Name,
 		Description:    request.Description,
@@ -56,8 +56,8 @@ func (ff *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, pers
 	})
 }
 
-func (ff *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, isActive *bool, id uint, personId uint) ([]entity.FeatureFlagResponse, int64, error) {
-	ff.Logger.Info().Msg("Getting Feature Flag")
+func (ffs *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, isActive *bool, id uint, personId uint) ([]entity.FeatureFlagResponse, int64, error) {
+	ffs.Logger.Info().Msg("Getting Feature Flag")
 
 	var pagination model.Pagination
 	pagination.Page = page
@@ -69,7 +69,7 @@ func (ff *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, i
 	filters.ID = id
 	filters.PersonID = personId
 
-	featureFlags, totalCount, err := ff.Repository.GetFeatureFlag(filters, pagination)
+	featureFlags, totalCount, err := ffs.Repository.GetFeatureFlag(filters, pagination)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -95,14 +95,15 @@ func (ff *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, i
 	return featureFlagResponses, totalCount, nil
 }
 
-func (ff *FeatureFlagService) UpdateFeatureFlagById(id uint, request entity.UpdateFeatureFlag) error {
-	ff.Logger.Info().Msg("Updating a Feature Flag")
+func (ffs *FeatureFlagService) UpdateFeatureFlagById(id uint, request entity.UpdateFeatureFlag) error {
+	ffs.Logger.Info().Msg("Updating a Feature Flag")
 
 	if err := request.Validate(); err != nil {
 		return errors.New(err.Error())
 	}
 
-	return ff.Repository.UpdateFeatureFlagById(id, model.UpdateFeatureFlag{
+	// TODO: before calling the update repo method, call get by id to check if feature flag exist
+	return ffs.Repository.UpdateFeatureFlagById(id, model.UpdateFeatureFlag{
 		Description:    request.Description,
 		IsActive:       request.IsActive,
 		ExpirationDate: request.ExpirationDate,

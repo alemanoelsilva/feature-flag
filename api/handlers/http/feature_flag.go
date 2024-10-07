@@ -29,28 +29,32 @@ func getPersonIdFromHeaders(c echo.Context) (uint, error) {
 	return uint(personId), nil
 }
 
-func LoadFeatureFlagsRoutes(router *echo.Echo, handler *EchoHandler) {
-	router.POST("/api/feature-flags/v1/feature-flags", handler.createFeatureFlagHandler)
-	router.GET("/api/feature-flags/v1/feature-flags", handler.getFeatureFlagHandler)
-	router.PUT("/api/feature-flags/v1/feature-flags/:id", handler.updateFeatureFlagByIdHandler)
+func getBodyFromRequest[T any](c echo.Context, input *T) error {
+	// manually decoding the json body
+	body, err := io.ReadAll(c.Request().Body)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(body, &input); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func LoadFeatureFlagsRoutes(e *echo.Echo, handler *EchoHandler) {
+	group := e.Group("/api/feature-flags")
+
+	group.POST("/v1/feature-flags", handler.createFeatureFlagHandler)
+	group.GET("/v1/feature-flags", handler.getFeatureFlagHandler)
+	group.PUT("/v1/feature-flags/:id", handler.updateFeatureFlagByIdHandler)
 }
 
 func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
-	// bind the json body to the struct, but it's not working when the body comes from the test case
-	// var input entity.FeatureFlag
-	// if err := c.Bind(&input); err != nil {
-	// 	return response.ErrorHandler(http.StatusBadRequest, err)
-	// }
-
-	// manually decoding the json body
 	var input entity.FeatureFlag
-	body, err := io.ReadAll(c.Request().Body)
-	if err != nil {
-		return response.ErrorHandler(http.StatusBadRequest, err)
-	}
-	if err := json.Unmarshal(body, &input); err != nil {
+	if err := getBodyFromRequest(c, &input); err != nil {
 		return response.ErrorHandler(http.StatusBadRequest, err)
 	}
 
@@ -60,6 +64,9 @@ func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
 	}
 
 	if err := e.FeatureFlagService.CreateFeatureFlag(input, personId); err != nil {
+		if err.Error() == "feature flag already exists" {
+			return response.ErrorHandler(http.StatusConflict, err)
+		}
 		return response.ErrorHandler(http.StatusInternalServerError, err)
 	}
 
@@ -113,30 +120,26 @@ func (e *EchoHandler) getFeatureFlagHandler(c echo.Context) error {
 func (e *EchoHandler) updateFeatureFlagByIdHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
-	// bind the json body to the struct, but it's not working when the body comes from the test case
-	// var input entity.FeatureFlag
-	// if err := c.Bind(&input); err != nil {
-	// 	return response.ErrorHandler(http.StatusBadRequest, err)
-	// }
-
-	// manually decoding the json body
 	var input entity.UpdateFeatureFlag
-	body, err := io.ReadAll(c.Request().Body)
+	if err := getBodyFromRequest(c, &input); err != nil {
+		return response.ErrorHandler(http.StatusBadRequest, err)
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return response.ErrorHandler(http.StatusBadRequest, err)
-	}
-	if err := json.Unmarshal(body, &input); err != nil {
-		return response.ErrorHandler(http.StatusBadRequest, err)
+		return response.ErrorHandler(http.StatusBadRequest, errors.New("feature flag id is not a number"))
 	}
 
-	id, _ := strconv.Atoi(c.Param("id"))
-
-	// personId, err := getPersonIdFromHeaders(c)
-	// if err != nil {
-	// 	return response.ErrorHandler(http.StatusUnauthorized, err)
-	// }
+	// TODO: get personId to audit
+	_, err = getPersonIdFromHeaders(c)
+	if err != nil {
+		return response.ErrorHandler(http.StatusUnauthorized, err)
+	}
 
 	if err := e.FeatureFlagService.UpdateFeatureFlagById(uint(id), input); err != nil {
+		if err.Error() == "no feature flag updated" {
+			return response.ErrorHandler(http.StatusNotFound, err)
+		}
 		return response.ErrorHandler(http.StatusInternalServerError, err)
 	}
 

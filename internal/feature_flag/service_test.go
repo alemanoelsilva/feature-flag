@@ -284,6 +284,10 @@ func TestUpdateFeatureFlagById(t *testing.T) {
 		featureFlagId := mock.AnythingOfType("uint")
 		updateFeatureFlagMock := mock.AnythingOfType("model.UpdateFeatureFlag")
 
+		filtersMock := mock.AnythingOfType("model.FeatureFlagFilters")
+		paginationMock := mock.AnythingOfType("model.Pagination")
+
+		mockRepo.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 1, nil)
 		mockRepo.On("UpdateFeatureFlagById", featureFlagId, updateFeatureFlagMock).Return(nil)
 
 		updateFeatureFlag := entity.UpdateFeatureFlag{
@@ -294,6 +298,28 @@ func TestUpdateFeatureFlagById(t *testing.T) {
 		err := service.UpdateFeatureFlagById(1, updateFeatureFlag)
 
 		assert.NoError(t, err)
+		mockRepo.AssertExpectations(t)
+	})
+
+	t.Run("Feature flag not found", func(t *testing.T) {
+		mockRepo := new(MockRepository)
+		logger := zerolog.New(os.Stdout)
+		service := LoadService(mockRepo, &logger)
+
+		filtersMock := mock.AnythingOfType("model.FeatureFlagFilters")
+		paginationMock := mock.AnythingOfType("model.Pagination")
+
+		mockRepo.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 0, nil)
+
+		updateFeatureFlag := entity.UpdateFeatureFlag{
+			Description:    "Description",
+			IsActive:       true,
+			ExpirationDate: "2024-10-10",
+		}
+		err := service.UpdateFeatureFlagById(1, updateFeatureFlag)
+
+		assert.Error(t, err)
+		assert.Equal(t, "feature flag not found", err.Error())
 		mockRepo.AssertExpectations(t)
 	})
 

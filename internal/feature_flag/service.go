@@ -102,7 +102,20 @@ func (ffs *FeatureFlagService) UpdateFeatureFlagById(id uint, request entity.Upd
 		return errors.New(err.Error())
 	}
 
-	// TODO: before calling the update repo method, call get by id to check if feature flag exist
+	var filters model.FeatureFlagFilters
+	filters.ID = id
+	var pagination model.Pagination
+	pagination.Limit = 1
+	pagination.Page = 1
+	_, countTotal, err := ffs.Repository.GetFeatureFlag(filters, pagination)
+	if err != nil {
+		return errors.New(err.Error())
+	}
+
+	if countTotal == 0 {
+		return errors.New("feature flag not found")
+	}
+
 	return ffs.Repository.UpdateFeatureFlagById(id, model.UpdateFeatureFlag{
 		Description:    request.Description,
 		IsActive:       request.IsActive,

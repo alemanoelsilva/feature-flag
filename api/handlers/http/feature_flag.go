@@ -138,6 +138,9 @@ func (e *EchoHandler) updateFeatureFlagByIdHandler(c echo.Context) error {
 
 	if err := e.FeatureFlagService.UpdateFeatureFlagById(uint(id), input); err != nil {
 		if err.Error() == "no feature flag updated" {
+			return response.SuccessHandler(http.StatusOK, handleResponseMessage("no feature flag updated"))
+		}
+		if err.Error() == "feature flag not found" {
 			return response.ErrorHandler(http.StatusNotFound, err)
 		}
 		return response.ErrorHandler(http.StatusInternalServerError, err)

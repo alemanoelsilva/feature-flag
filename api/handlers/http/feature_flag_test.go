@@ -73,7 +73,7 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 
 		mockLogger := zerolog.New(os.Stdout)
 
-		handler := &EchoHandler{
+		handler := &FeatureFlagEchoHandler{
 			FeatureFlagService: featureflag.FeatureFlagService{
 				Repository: mockRepository,
 				Logger:     &mockLogger,
@@ -107,7 +107,7 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 		mockRepository := new(MockRepository)
 		mockLogger := zerolog.New(os.Stdout)
 
-		handler := &EchoHandler{
+		handler := &FeatureFlagEchoHandler{
 			FeatureFlagService: featureflag.FeatureFlagService{
 				Repository: mockRepository,
 				Logger:     &mockLogger,
@@ -141,7 +141,7 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 		mockRepository := new(MockRepository)
 		mockLogger := zerolog.New(os.Stdout)
 
-		handler := &EchoHandler{
+		handler := &FeatureFlagEchoHandler{
 			FeatureFlagService: featureflag.FeatureFlagService{
 				Repository: mockRepository,
 				Logger:     &mockLogger,
@@ -175,7 +175,7 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 		mockRepository := new(MockRepository)
 		mockLogger := zerolog.New(os.Stdout)
 
-		handler := &EchoHandler{
+		handler := &FeatureFlagEchoHandler{
 			FeatureFlagService: featureflag.FeatureFlagService{
 				Repository: mockRepository,
 				Logger:     &mockLogger,
@@ -220,7 +220,7 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 
 		mockLogger := zerolog.New(os.Stdout)
 
-		handler := &EchoHandler{
+		handler := &FeatureFlagEchoHandler{
 			FeatureFlagService: featureflag.FeatureFlagService{
 				Repository: mockRepository,
 				Logger:     &mockLogger,
@@ -263,7 +263,7 @@ func TestCreateFeatureFlagHandler(t *testing.T) {
 
 		mockLogger := zerolog.New(os.Stdout)
 
-		handler := &EchoHandler{
+		handler := &FeatureFlagEchoHandler{
 			FeatureFlagService: featureflag.FeatureFlagService{
 				Repository: mockRepository,
 				Logger:     &mockLogger,
@@ -366,7 +366,7 @@ func TestGetFeatureFlagHandler(t *testing.T) {
 
 		mockLogger := zerolog.New(os.Stdout)
 
-		handler := &EchoHandler{
+		handler := &FeatureFlagEchoHandler{
 			FeatureFlagService: featureflag.FeatureFlagService{
 				Repository: mockRepository,
 				Logger:     &mockLogger,
@@ -432,7 +432,7 @@ func TestUpdateFeatureFlagByIdHandler(t *testing.T) {
 
 		mockLogger := zerolog.New(os.Stdout)
 
-		handler := &EchoHandler{
+		handler := &FeatureFlagEchoHandler{
 			FeatureFlagService: featureflag.FeatureFlagService{
 				Repository: mockRepository,
 				Logger:     &mockLogger,
@@ -484,7 +484,7 @@ func TestUpdateFeatureFlagByIdHandler(t *testing.T) {
 
 		mockLogger := zerolog.New(os.Stdout)
 
-		handler := &EchoHandler{
+		handler := &FeatureFlagEchoHandler{
 			FeatureFlagService: featureflag.FeatureFlagService{
 				Repository: mockRepository,
 				Logger:     &mockLogger,

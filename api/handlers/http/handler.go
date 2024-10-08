@@ -1,40 +1,10 @@
 package http
 
 import (
-	"ff/api/handlers/http/middlewares"
-	featureflag "ff/internal/feature_flag"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
-
-type PaginationResponse struct {
-	Items []interface{} `json:"items"`
-	Total int           `json:"total"`
-}
-
-type EchoHandler struct {
-	FeatureFlagService featureflag.FeatureFlagService
-}
-
-func NewEchoHandler(featureflag featureflag.FeatureFlagService) *echo.Echo {
-	handler := &EchoHandler{
-		FeatureFlagService: featureflag,
-	}
-
-	router := echo.New()
-
-	// logger setup
-	router.Use(middlewares.LoggerMiddleware())
-
-	LoadFeatureFlagsRoutes(router, handler)
-
-	return router
-}
-
-func handleResponseMessage(msg string) interface{} {
-	return map[string]interface{}{"message": msg}
-}
 
 type ResponseJSON struct {
 	c echo.Context
@@ -42,6 +12,15 @@ type ResponseJSON struct {
 
 func (s ResponseJSON) SuccessHandler(code int, data interface{}) error {
 	return s.c.JSON(code, data)
+}
+
+func (s ResponseJSON) SuccessHandlerMessage(code int, msg string) error {
+	return s.c.JSON(code, map[string]interface{}{"message": msg})
+}
+
+type PaginationResponse struct {
+	Items []interface{} `json:"items"`
+	Total int           `json:"total"`
 }
 
 func (s ResponseJSON) PaginationHandler(data []interface{}, totalCount int64) error {

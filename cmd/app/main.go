@@ -34,7 +34,7 @@ func main() {
 	featureFlagService := featureflag.LoadService(featureFlagRepository, &logger)
 
 	logger.Info().Msg("Initializing Handlers")
-	router := handler.NewEchoHandler(*featureFlagService)
+	router := handler.NewFeatureFlagEchoHandler(*featureFlagService)
 
 	// Start the server
 	logger.Info().Msg(fmt.Sprintf("Starting Server on port %s", config.AppConfig.Port))

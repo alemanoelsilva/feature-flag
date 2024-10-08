@@ -1,50 +1,36 @@
 package http
 
 import (
-	"encoding/json"
 	"errors"
+	"ff/api/middlewares"
+	featureflag "ff/internal/feature_flag"
 	"ff/internal/feature_flag/entity"
-	"io"
+	"ff/pkg/utils"
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
-func getPersonIdFromHeaders(c echo.Context, personId *int) error {
-	personIdStr := c.Request().Header.Get("Personid")
-	if personIdStr == "" {
-		return errors.New("missing Personid header")
-	}
-
-	id, err := strconv.Atoi(personIdStr)
-	if err != nil {
-		return errors.New("invalid Personid format")
-	}
-
-	if id == 0 {
-		return errors.New("you are not logged in")
-	}
-
-	*personId = id
-
-	return nil
+type FeatureFlagEchoHandler struct {
+	FeatureFlagService featureflag.FeatureFlagService
 }
 
-func getBodyFromRequest[T any](c echo.Context, input *T) error {
-	// manually decoding the json body
-	body, err := io.ReadAll(c.Request().Body)
-	if err != nil {
-		return err
-	}
-	if err := json.Unmarshal(body, &input); err != nil {
-		return err
+func NewFeatureFlagEchoHandler(featureflag featureflag.FeatureFlagService) *echo.Echo {
+	handler := &FeatureFlagEchoHandler{
+		FeatureFlagService: featureflag,
 	}
 
-	return nil
+	e := echo.New()
+
+	e.Use(middlewares.LoggerMiddleware())
+
+	LoadFeatureFlagsRoutes(e, handler)
+
+	return e
 }
 
-func LoadFeatureFlagsRoutes(e *echo.Echo, handler *EchoHandler) {
+func LoadFeatureFlagsRoutes(e *echo.Echo, handler *FeatureFlagEchoHandler) {
 	group := e.Group("/api/feature-flags")
 
 	group.POST("/v1/feature-flags", handler.createFeatureFlagHandler)
@@ -52,16 +38,16 @@ func LoadFeatureFlagsRoutes(e *echo.Echo, handler *EchoHandler) {
 	group.PUT("/v1/feature-flags/:id", handler.updateFeatureFlagByIdHandler)
 }
 
-func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
+func (e *FeatureFlagEchoHandler) createFeatureFlagHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
 	var input entity.FeatureFlag
-	if err := getBodyFromRequest(c, &input); err != nil {
+	if err := utils.GetBodyFromRequest(c, &input); err != nil {
 		return response.ErrorHandler(http.StatusBadRequest, err)
 	}
 
 	var personId int
-	if err := getPersonIdFromHeaders(c, &personId); err != nil {
+	if err := utils.GetAuthenticatedPerson(c, &personId); err != nil {
 		return response.ErrorHandler(http.StatusUnauthorized, err)
 	}
 
@@ -72,10 +58,10 @@ func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
 		return response.ErrorHandler(http.StatusInternalServerError, err)
 	}
 
-	return response.SuccessHandler(http.StatusCreated, handleResponseMessage("Feature Flag Created"))
+	return response.SuccessHandlerMessage(http.StatusCreated, "Feature Flag Created")
 }
 
-func (e *EchoHandler) getFeatureFlagHandler(c echo.Context) error {
+func (e *FeatureFlagEchoHandler) getFeatureFlagHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
 	page, _ := strconv.Atoi(c.QueryParam("page"))
@@ -119,11 +105,11 @@ func (e *EchoHandler) getFeatureFlagHandler(c echo.Context) error {
 	return response.PaginationHandler(interfaceSlice, totalCount)
 }
 
-func (e *EchoHandler) updateFeatureFlagByIdHandler(c echo.Context) error {
+func (e *FeatureFlagEchoHandler) updateFeatureFlagByIdHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
 	var input entity.UpdateFeatureFlag
-	if err := getBodyFromRequest(c, &input); err != nil {
+	if err := utils.GetBodyFromRequest(c, &input); err != nil {
 		return response.ErrorHandler(http.StatusBadRequest, err)
 	}
 
@@ -134,13 +120,13 @@ func (e *EchoHandler) updateFeatureFlagByIdHandler(c echo.Context) error {
 
 	// TODO: get personId to audit
 	var personId int
-	if err = getPersonIdFromHeaders(c, &personId); err != nil {
+	if err = utils.GetAuthenticatedPerson(c, &personId); err != nil {
 		return response.ErrorHandler(http.StatusUnauthorized, err)
 	}
 
 	if err := e.FeatureFlagService.UpdateFeatureFlagById(uint(id), input); err != nil {
 		if err.Error() == "no feature flag updated" {
-			return response.SuccessHandler(http.StatusOK, handleResponseMessage("no feature flag updated"))
+			return response.SuccessHandlerMessage(http.StatusOK, "no feature flag updated")
 		}
 		if err.Error() == "feature flag not found" {
 			return response.ErrorHandler(http.StatusNotFound, err)
@@ -148,5 +134,5 @@ func (e *EchoHandler) updateFeatureFlagByIdHandler(c echo.Context) error {
 		return response.ErrorHandler(http.StatusInternalServerError, err)
 	}
 
-	return response.SuccessHandler(http.StatusOK, handleResponseMessage("Feature Flag Updated"))
+	return response.SuccessHandlerMessage(http.StatusOK, "Feature Flag Updated")
 }

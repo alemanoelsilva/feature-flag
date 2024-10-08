@@ -11,22 +11,24 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func getPersonIdFromHeaders(c echo.Context) (uint, error) {
+func getPersonIdFromHeaders(c echo.Context, personId *int) error {
 	personIdStr := c.Request().Header.Get("Personid")
 	if personIdStr == "" {
-		return 0, errors.New("missing Personid header")
+		return errors.New("missing Personid header")
 	}
 
-	personId, err := strconv.Atoi(personIdStr)
+	id, err := strconv.Atoi(personIdStr)
 	if err != nil {
-		return 0, errors.New("invalid Personid format")
+		return errors.New("invalid Personid format")
 	}
 
-	if personId == 0 {
-		return 0, errors.New("you are not logged in")
+	if id == 0 {
+		return errors.New("you are not logged in")
 	}
 
-	return uint(personId), nil
+	*personId = id
+
+	return nil
 }
 
 func getBodyFromRequest[T any](c echo.Context, input *T) error {
@@ -58,12 +60,12 @@ func (e *EchoHandler) createFeatureFlagHandler(c echo.Context) error {
 		return response.ErrorHandler(http.StatusBadRequest, err)
 	}
 
-	personId, err := getPersonIdFromHeaders(c)
-	if err != nil {
+	var personId int
+	if err := getPersonIdFromHeaders(c, &personId); err != nil {
 		return response.ErrorHandler(http.StatusUnauthorized, err)
 	}
 
-	if err := e.FeatureFlagService.CreateFeatureFlag(input, personId); err != nil {
+	if err := e.FeatureFlagService.CreateFeatureFlag(input, uint(personId)); err != nil {
 		if err.Error() == "feature flag already exists" {
 			return response.ErrorHandler(http.StatusConflict, err)
 		}
@@ -131,8 +133,8 @@ func (e *EchoHandler) updateFeatureFlagByIdHandler(c echo.Context) error {
 	}
 
 	// TODO: get personId to audit
-	_, err = getPersonIdFromHeaders(c)
-	if err != nil {
+	var personId int
+	if err = getPersonIdFromHeaders(c, &personId); err != nil {
 		return response.ErrorHandler(http.StatusUnauthorized, err)
 	}
 

@@ -29,19 +29,16 @@ func (ffs *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, per
 		return errors.New(err.Error())
 	}
 
-	var filters model.FeatureFlagFilters
-	filters.Name = request.Name
-
-	var pagination model.Pagination
-	pagination.Page = 1
-	pagination.Limit = 1
-
-	_, totalCount, err := ffs.Repository.GetFeatureFlag(filters, pagination)
+	_, totalCount, err := ffs.Repository.GetFeatureFlag(model.FeatureFlagFilters{
+		Name: request.Name,
+	}, model.Pagination{
+		Limit: 1,
+		Page:  1,
+	})
 	if err != nil {
 		return err
 	}
 
-	// TODO: return 409
 	if totalCount > 0 {
 		return errors.New("feature flag already exists")
 	}
@@ -102,12 +99,12 @@ func (ffs *FeatureFlagService) UpdateFeatureFlagById(id uint, request entity.Upd
 		return errors.New(err.Error())
 	}
 
-	var filters model.FeatureFlagFilters
-	filters.ID = id
-	var pagination model.Pagination
-	pagination.Limit = 1
-	pagination.Page = 1
-	_, countTotal, err := ffs.Repository.GetFeatureFlag(filters, pagination)
+	_, countTotal, err := ffs.Repository.GetFeatureFlag(model.FeatureFlagFilters{
+		ID: id,
+	}, model.Pagination{
+		Limit: 1,
+		Page:  1,
+	})
 	if err != nil {
 		return errors.New(err.Error())
 	}

@@ -16,6 +16,9 @@ MAIN_PACKAGE_PATH = ./cmd/app
 # Main binary name
 BINARY_NAME = charmander
 
+# air tmp folder name
+AIR_TMP = ./tmp
+
 # Build target
 build:
 	$(GOBUILD) -o $(BINARY_NAME) $(MAIN_PACKAGE_PATH)
@@ -53,6 +56,7 @@ clean:
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)
 	rm -f $(COVERAGE_FILE)
+	rm -f $(AIR_TMP)
 
 # Install dependencies
 deps:

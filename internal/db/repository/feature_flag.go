@@ -3,9 +3,6 @@ package repository
 import (
 	"errors"
 	model "ff/internal/db/model"
-
-	"github.com/rs/zerolog"
-	"gorm.io/gorm"
 )
 
 type FeatureFlagRepository interface {
@@ -14,13 +11,8 @@ type FeatureFlagRepository interface {
 	UpdateFeatureFlagById(id uint, featureFlag model.UpdateFeatureFlag) error
 }
 
-type SqlRepository struct {
-	DB     *gorm.DB
-	Logger *zerolog.Logger
-}
-
 func (s *SqlRepository) AddFeatureFlag(featureFlag model.FeatureFlag) error {
-	if result := s.DB.Create(&featureFlag); result.Error != nil {
+	if result := s.DB.Debug().Create(&featureFlag); result.Error != nil {
 		s.Logger.Error().Err(result.Error)
 		return errors.New("error when creating feature flag")
 	}
@@ -39,6 +31,11 @@ func (s *SqlRepository) GetFeatureFlag(filters model.FeatureFlagFilters, paginat
 	// this is an optional filter, it can be true/false or not be sent
 	if filters.IsActive != nil {
 		query.Where("feature_flags.is_active = ?", *filters.IsActive)
+	}
+
+	// this is an optional filter, it can be true/false or not be sent
+	if filters.IsGlobal != nil {
+		query.Where("feature_flags.is_global = ?", *filters.IsGlobal)
 	}
 
 	if filters.ID != 0 {
@@ -73,6 +70,7 @@ func (s *SqlRepository) UpdateFeatureFlagById(id uint, featureFlag model.UpdateF
 	updateData := map[string]interface{}{
 		"description":     featureFlag.Description,
 		"is_active":       featureFlag.IsActive, // Explicitly include even if false
+		"is_global":       featureFlag.IsGlobal, // Explicitly include even if false
 		"expiration_date": featureFlag.ExpirationDate,
 	}
 

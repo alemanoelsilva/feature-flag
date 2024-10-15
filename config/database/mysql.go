@@ -26,5 +26,5 @@ func (ddb *DDB) Connect(uri string) *gorm.DB {
 
 // TODO: Take a look at this
 func (ddb *DDB) RunMigrations(db *gorm.DB) {
-	db.AutoMigrate(&model.FeatureFlag{}, &model.Person{})
+	db.AutoMigrate(&model.FeatureFlag{}, &model.Person{}, &model.Assignment{})
 }

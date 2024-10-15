@@ -1,0 +1,45 @@
+<!-- {{ template "people_list" . }} -->
+{{ block "people_list" . }}
+<div id="person-list" class="">
+  <h2 class="capitalize text-2xl py-4">People</h2>
+
+  <table class="table-fixed w-full text-sm text-left">
+    <thead class="table-header-group uppercase">
+      <tr class="table-row">
+        <th id="id" class="table-cell text-left px-2 py-2 w-4">ID</th>
+        <th id="name" class="table-cell text-left px-2 py-2 w-16">Name</th>
+        <th id="email" class="table-cell text-left px-2 py-2 w-36">Email</th>
+        <th id="status" class="table-cell text-left py-2 w-10">Status</th>
+      </tr>
+    </thead>
+    <tbody class="table-row-group">
+      {{ range .People }}
+      <tr class="table-row border-b hover:bg-gray-50">
+        <td class="table-cell px-2 py-2">{{ .ID }}</td>
+        <td class="table-cell px-2 py-2">{{ .Name }}</td>
+        <td class="table-cell px-2 py-2 truncate">{{ .Email }}</td>
+        <td class="table-cell py-2 cursor-pointer" hx-post="/assignment/{{ .ID }}" hx-trigger="click"
+          hx-target="#container">
+          {{ if .IsAssigned }}
+          <div class="flex justify-start">
+            <img src="/images/active.svg" alt="is-assigned" style="width: 20px; height: 20px">
+            <span class="pl-1">Assigned</span>
+          </div>
+          {{ else }}
+          <div class="flex justify-start">
+            <img src="/images/inactive.svg" alt="is-not-assigned" style="width: 20px; height: 20px">
+            <span class="pl-1">Not Assigned</span>
+          </div>
+          {{ end }}
+        </td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+
+  <!-- check error -->
+  {{ if .ErrorPage }}
+  {{ template "page_error" .}}
+  {{ end }}
+</div>
+{{ end }}

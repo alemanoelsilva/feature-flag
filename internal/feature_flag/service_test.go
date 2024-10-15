@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"ff/internal/db/model"
-	"ff/internal/feature_flag/entity"
+	featureFlagEntity "ff/internal/feature_flag/entity"
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
@@ -40,7 +40,7 @@ func TestCreateFeatureFlag(t *testing.T) {
 		logger := zerolog.New(os.Stdout)
 		service := LoadService(mockRepo, &logger)
 
-		request := entity.FeatureFlag{
+		request := featureFlagEntity.FeatureFlag{
 			Name:        "TEST_FLAG_V1",
 			Description: "Test Description",
 			IsActive:    true,
@@ -65,7 +65,7 @@ func TestCreateFeatureFlag(t *testing.T) {
 		service := LoadService(mockRepo, &logger)
 
 		expirationDate := time.Now().AddDate(0, 1, 0).Format(time.DateOnly)
-		request := entity.FeatureFlag{
+		request := featureFlagEntity.FeatureFlag{
 			Name:           "TEST_FLAG_V1",
 			Description:    "Test Description",
 			IsActive:       true,
@@ -90,7 +90,7 @@ func TestCreateFeatureFlag(t *testing.T) {
 		service := LoadService(mockRepo, &logger)
 
 		expirationDate := time.Now().AddDate(0, 1, 0).Format(time.DateOnly)
-		request := entity.FeatureFlag{
+		request := featureFlagEntity.FeatureFlag{
 			Name:           "TEST_DUP_FLAG_V1",
 			Description:    "Test Description",
 			IsActive:       true,
@@ -114,7 +114,7 @@ func TestCreateFeatureFlag(t *testing.T) {
 		logger := zerolog.New(os.Stdout)
 		service := LoadService(mockRepo, &logger)
 
-		request := entity.FeatureFlag{
+		request := featureFlagEntity.FeatureFlag{
 			Name:        "",
 			Description: "Test Description",
 			IsActive:    true,
@@ -132,7 +132,7 @@ func TestCreateFeatureFlag(t *testing.T) {
 		logger := zerolog.New(os.Stdout)
 		service := LoadService(mockRepo, &logger)
 
-		request := entity.FeatureFlag{
+		request := featureFlagEntity.FeatureFlag{
 			Name:        "test flag v1",
 			Description: "Test Description",
 			IsActive:    true,
@@ -150,7 +150,7 @@ func TestCreateFeatureFlag(t *testing.T) {
 		logger := zerolog.New(os.Stdout)
 		service := LoadService(mockRepo, &logger)
 
-		request := entity.FeatureFlag{
+		request := featureFlagEntity.FeatureFlag{
 			Name:        "TEST_FLAG_V1",
 			Description: "",
 			IsActive:    true,
@@ -168,7 +168,7 @@ func TestCreateFeatureFlag(t *testing.T) {
 		logger := zerolog.New(os.Stdout)
 		service := LoadService(mockRepo, &logger)
 
-		request := entity.FeatureFlag{
+		request := featureFlagEntityFeatureFlag{
 			Name:           "TEST_FLAG_V1",
 			Description:    "Test Description",
 			IsActive:       true,
@@ -290,7 +290,7 @@ func TestUpdateFeatureFlagById(t *testing.T) {
 		mockRepo.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 1, nil)
 		mockRepo.On("UpdateFeatureFlagById", featureFlagId, updateFeatureFlagMock).Return(nil)
 
-		updateFeatureFlag := entity.UpdateFeatureFlag{
+		updateFeatureFlag := featureFlagEntity.UpdateFeatureFlag{
 			Description:    "Description",
 			IsActive:       true,
 			ExpirationDate: "2024-10-10",
@@ -311,7 +311,7 @@ func TestUpdateFeatureFlagById(t *testing.T) {
 
 		mockRepo.On("GetFeatureFlag", filtersMock, paginationMock).Return([]model.FeatureFlag{}, 0, nil)
 
-		updateFeatureFlag := entity.UpdateFeatureFlag{
+		updateFeatureFlag := featureFlagEntity.UpdateFeatureFlag{
 			Description:    "Description",
 			IsActive:       true,
 			ExpirationDate: "2024-10-10",
@@ -328,7 +328,7 @@ func TestUpdateFeatureFlagById(t *testing.T) {
 		logger := zerolog.New(os.Stdout)
 		service := LoadService(mockRepo, &logger)
 
-		updateFeatureFlag := entity.UpdateFeatureFlag{
+		updateFeatureFlag := featureFlagEntity.UpdateFeatureFlag{
 			IsActive:       true,
 			ExpirationDate: "2024-10-10",
 		}
@@ -344,7 +344,7 @@ func TestUpdateFeatureFlagById(t *testing.T) {
 		logger := zerolog.New(os.Stdout)
 		service := LoadService(mockRepo, &logger)
 
-		updateFeatureFlag := entity.UpdateFeatureFlag{
+		updateFeatureFlag := featureFlagEntity.UpdateFeatureFlag{
 			Description:    "Description",
 			IsActive:       true,
 			ExpirationDate: "42024-10-10",

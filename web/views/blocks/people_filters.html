@@ -1,0 +1,33 @@
+{{ block "people_filters" . }}
+<div id="header-person-filters" class="my-4">
+  <div class="flex justify-between">
+    <div>
+      <!-- TODO: trigger after typing -->
+      <input type="text" id="person-name" name="name" placeholder="Enter Person Name"
+        class="w-64 border-1 bg-transparent ring-1 ring-inset ring-gray-300 py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 pl-4"
+        hx-trigger="keyup changed delay:500ms">
+      <button hx-get="/people-filter" hx-include="#person-name" hx-target="#person-list"
+        hx-swap="outerHTML swap:100ms"
+        class="text-sm font-semibold leading-6 text-white shadow-sm bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        Filter
+      </button>
+    </div>
+
+    <fieldset>
+      <div class="mt-2 inline-block align-middle">
+        <div class="flex gap-x-2">
+          <div class="flex h-6 items-center">
+            <input id="assigned-person" name="isAssigned" type="checkbox"
+              class="h-5 w-5 rounded  accent-indigo-900"
+              hx-get="/people-filter" hx-include="#person-name" hx-target="#person-list"
+              hx-trigger="click" hx-swap="outerHTML swap:100ms" {{ if .IsGlobal }} disabled {{ end }}>
+          </div>
+          <div class="text-sm leading-6">
+            <label for="assigned-person" class="font-medium text-gray-900">Show Assigned People</label>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+</div>
+{{ end }}

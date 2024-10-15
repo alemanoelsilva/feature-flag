@@ -9,10 +9,14 @@ import (
 	"os"
 
 	handler "ff/api/handlers/http"
-	"ff/internal/db/mysql"
+	assignment "ff/internal/assignment"
+	mysql "ff/internal/db/mysql"
 	featureflag "ff/internal/feature_flag"
+	person "ff/internal/person"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
 )
 
@@ -27,16 +31,24 @@ func main() {
 	ddb.RunMigrations(db)
 
 	logger.Info().Msg("Initializing Repository (MySQL)")
-	// TODO: split repositories
-	featureFlagRepository := mysql.NewSqlRepository(db, &logger)
+	featureFlagRepository := mysql.NewSqlFeatureFlagRepository(db, &logger)
+	assignmentRepository := mysql.NewSqlAssignmentRepository(db, &logger)
+	peopleRepository := mysql.NewSqlPersonRepository(db, &logger)
 
 	logger.Info().Msg("Initializing Services/UseCases")
 	featureFlagService := featureflag.LoadService(featureFlagRepository, &logger)
+	assignmentService := assignment.LoadService(assignmentRepository, &logger)
+	personService := person.LoadService(peopleRepository, &logger)
+
+	e := echo.New()
+	e.Use(middleware.Logger())
 
 	logger.Info().Msg("Initializing Handlers")
-	router := handler.NewFeatureFlagEchoHandler(*featureFlagService)
+	handler.NewFeatureFlagEchoHandler(*featureFlagService, e)
+	handler.NewAssignmentEchoHandler(*assignmentService, e)
+	handler.NewPersonEchoHandler(*personService, e)
 
 	// Start the server
 	logger.Info().Msg(fmt.Sprintf("Starting Server on port %s", config.AppConfig.Port))
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", config.AppConfig.Port), router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", config.AppConfig.Port), e))
 }

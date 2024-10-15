@@ -6,7 +6,8 @@ import (
 	"errors"
 	"ff/internal/db/model"
 	featureflag "ff/internal/feature_flag"
-	"ff/internal/feature_flag/entity"
+	featureFlagEntity "ff/internal/feature_flag/entity"
+	personEntity "ff/internal/person/entity"
 	"fmt"
 	"io"
 	"net/http"
@@ -44,7 +45,7 @@ func (m *MockRepository) UpdateFeatureFlagById(id uint, featureFlag model.Update
 
 // Create Feature Flag Tests Cases
 func TestCreateFeatureFlagHandler(t *testing.T) {
-	validFeatureFlagBody := entity.FeatureFlag{
+	validFeatureFlagBody := featureFlagEntity.FeatureFlag{
 		Name:        "TEST_FLAG_NAME",
 		Description: "Test Description",
 		IsActive:    true,
@@ -317,7 +318,7 @@ func TestGetFeatureFlagHandler(t *testing.T) {
 		},
 	}}
 
-	featureFlagResponse := []entity.FeatureFlagResponse{{
+	featureFlagResponse := []featureFlagEntity.FeatureFlagResponse{{
 		ID:             4,
 		Name:           "TEST_FLAG_NAME",
 		Description:    "This is an example feature flag",
@@ -325,7 +326,7 @@ func TestGetFeatureFlagHandler(t *testing.T) {
 		ExpirationDate: "2024-05-09",
 		CreatedAt:      timeMock.Format("2006-01-02 15:04:05"),
 		UpdatedAt:      timeMock.Format("2006-01-02 15:04:05"),
-		Person: entity.PersonResponse{
+		Person: personEntity.PersonResponse{
 			ID:    1,
 			Name:  "Person Name",
 			Email: "person.email@email.com",
@@ -396,7 +397,7 @@ func TestGetFeatureFlagHandler(t *testing.T) {
 
 // Update Feature Flag By ID Tests Cases
 func TestUpdateFeatureFlagByIdHandler(t *testing.T) {
-	featureFlagBody := entity.UpdateFeatureFlag{
+	featureFlagBody := featureFlagEntity.UpdateFeatureFlag{
 		Description:    "This is an example feature flag",
 		IsActive:       false,
 		ExpirationDate: "2024-05-09",

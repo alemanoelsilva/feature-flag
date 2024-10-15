@@ -2,27 +2,19 @@ package utils
 
 import (
 	"errors"
-	"strconv"
+	auth "ff/internal/auth"
 
 	"github.com/labstack/echo/v4"
 )
 
 func GetAuthenticatedPerson(c echo.Context, personId *int) error {
-	personIdStr := c.Request().Header.Get("Personid")
-	if personIdStr == "" {
-		return errors.New("missing Personid header")
-	}
+	authInfo := c.Get("auth_info").(auth.AuthUserResponse)
 
-	id, err := strconv.Atoi(personIdStr)
-	if err != nil {
-		return errors.New("invalid Personid format")
-	}
-
-	if id == 0 {
+	if authInfo.PersonID == 0 {
 		return errors.New("you are not logged in")
 	}
 
-	*personId = id
+	*personId = authInfo.PersonID
 
 	return nil
 }

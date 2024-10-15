@@ -5,7 +5,8 @@ import (
 
 	"ff/internal/db/model"
 	repo "ff/internal/db/repository"
-	entity "ff/internal/feature_flag/entity"
+	featureFlagEntity "ff/internal/feature_flag/entity"
+	personEntity "ff/internal/person/entity"
 
 	"github.com/rs/zerolog"
 )
@@ -22,7 +23,7 @@ func LoadService(r repo.FeatureFlagRepository, l *zerolog.Logger) *FeatureFlagSe
 	}
 }
 
-func (ffs *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, personId uint) error {
+func (ffs *FeatureFlagService) CreateFeatureFlag(request featureFlagEntity.FeatureFlag, personId uint) error {
 	ffs.Logger.Info().Msg("Creating a new Feature Flag")
 
 	if err := request.Validate(); err != nil {
@@ -48,12 +49,13 @@ func (ffs *FeatureFlagService) CreateFeatureFlag(request entity.FeatureFlag, per
 		Name:           request.Name,
 		Description:    request.Description,
 		IsActive:       request.IsActive,
+		IsGlobal:       request.IsGlobal,
 		ExpirationDate: request.ExpirationDate,
 		PersonID:       personId,
 	})
 }
 
-func (ffs *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, isActive *bool, id uint, personId uint) ([]entity.FeatureFlagResponse, int64, error) {
+func (ffs *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, isActive *bool, isGlobal *bool, id uint, personId uint) ([]featureFlagEntity.FeatureFlagResponse, int64, error) {
 	ffs.Logger.Info().Msg("Getting Feature Flag")
 
 	var pagination model.Pagination
@@ -63,6 +65,7 @@ func (ffs *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, 
 	var filters model.FeatureFlagFilters
 	filters.Name = name
 	filters.IsActive = isActive
+	filters.IsGlobal = isGlobal
 	filters.ID = id
 	filters.PersonID = personId
 
@@ -71,17 +74,18 @@ func (ffs *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, 
 		return nil, 0, err
 	}
 
-	var featureFlagResponses []entity.FeatureFlagResponse
+	var featureFlagResponses []featureFlagEntity.FeatureFlagResponse
 	for _, ffDB := range featureFlags {
-		featureFlagResponses = append(featureFlagResponses, entity.FeatureFlagResponse{
+		featureFlagResponses = append(featureFlagResponses, featureFlagEntity.FeatureFlagResponse{
 			ID:             ffDB.ID,
 			Name:           ffDB.Name,
 			Description:    ffDB.Description,
 			IsActive:       ffDB.IsActive,
+			IsGlobal:       ffDB.IsGlobal,
 			ExpirationDate: ffDB.ExpirationDate,
 			CreatedAt:      ffDB.CreatedAt.Format("2006-01-02 15:04:05"),
 			UpdatedAt:      ffDB.UpdatedAt.Format("2006-01-02 15:04:05"),
-			Person: entity.PersonResponse{
+			Person: personEntity.PersonResponse{
 				ID:    ffDB.Person.ID,
 				Name:  ffDB.Person.Name,
 				Email: ffDB.Person.Email,
@@ -92,7 +96,7 @@ func (ffs *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, 
 	return featureFlagResponses, totalCount, nil
 }
 
-func (ffs *FeatureFlagService) UpdateFeatureFlagById(id uint, request entity.UpdateFeatureFlag) error {
+func (ffs *FeatureFlagService) UpdateFeatureFlagById(id uint, request featureFlagEntity.UpdateFeatureFlag) error {
 	ffs.Logger.Info().Msg("Updating a Feature Flag")
 
 	if err := request.Validate(); err != nil {
@@ -116,6 +120,7 @@ func (ffs *FeatureFlagService) UpdateFeatureFlagById(id uint, request entity.Upd
 	return ffs.Repository.UpdateFeatureFlagById(id, model.UpdateFeatureFlag{
 		Description:    request.Description,
 		IsActive:       request.IsActive,
+		IsGlobal:       request.IsGlobal,
 		ExpirationDate: request.ExpirationDate,
 	})
 }

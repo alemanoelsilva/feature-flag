@@ -12,16 +12,22 @@ COVERAGE_FILE = coverage.out
 
 # Main package path
 MAIN_PACKAGE_PATH = ./cmd/app
+MAIN_PACKAGE_WEB_PATH = ./web/app
 
 # Main binary name
-BINARY_NAME = charmander
+BINARY_API_NAME = charmander
+BINARY_WEB_NAME = charmeleon
 
 # air tmp folder name
 AIR_TMP = ./tmp
 
-# Build target
+# Build api target
 build:
-	$(GOBUILD) -o $(BINARY_NAME) $(MAIN_PACKAGE_PATH)
+	$(GOBUILD) -o $(BINARY_API_NAME) $(MAIN_PACKAGE_PATH)
+
+# Build web target
+build-web:
+	$(GOBUILD) -o $(BINARY_WEB_NAME) $(MAIN_PACKAGE_WEB_PATH)
 
 # Test target
 test:
@@ -54,7 +60,7 @@ vet:
 # Clean target
 clean:
 	$(GOCLEAN)
-	rm -f $(BINARY_NAME)
+	rm -f $(BINARY_API_NAME)
 	rm -f $(COVERAGE_FILE)
 	rm -f $(AIR_TMP)
 
@@ -66,8 +72,12 @@ deps:
 all: deps fmt vet test build
 
 # Run target (build and run)
-run: build
-	./$(BINARY_NAME)
+run-api: build
+	./$(BINARY_API_NAME)
+
+# Run target (build and run)
+run-web: build-web
+	./$(BINARY_WEB_NAME)
 
 # Phony targets
 .PHONY: build test fmt vet clean deps all run

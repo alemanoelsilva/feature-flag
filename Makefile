@@ -13,7 +13,7 @@ COVERAGE_FILE = coverage.out
 # Main package path
 MAIN_PACKAGE_PATH = ./cmd/app
 MAIN_PACKAGE_WEB_PATH = ./web/app
-MAIN_PACKAGE_TEMPL_PATH = ./templ/app
+MAIN_PACKAGE_TEMPL_PATH = ./web/app
 
 # Main binary name
 BINARY_API_NAME = charmander

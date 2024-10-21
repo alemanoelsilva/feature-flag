@@ -14,7 +14,7 @@ import (
 	"ff/web/types"
 )
 
-func Name(name string, isNameError bool) templ.Component {
+func Name(name string, isNameError bool, isCreation bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -40,40 +40,80 @@ func Name(name string, isNameError bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if isNameError {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"text\" id=\"name\" name=\"name\" value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var2 string
-			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(name)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/views/create_or_update_feature_flag_form.templ`, Line: 16, Col: 58}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"border-2 border-red-400 block pl-4 flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 bg-transparent\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
+			if isCreation {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"text\" id=\"name\" name=\"name\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var2 string
+				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(name)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/create_or_update_feature_flag_form.templ`, Line: 17, Col: 58}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"border-2 border-red-400 block pl-4 flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 bg-transparent\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"text\" id=\"name\" name=\"name\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var3 string
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(name)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/create_or_update_feature_flag_form.templ`, Line: 20, Col: 58}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"border-2 border-red-400 block pl-4 flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 bg-gray-300 cursor-not-allowed\" readonly>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
 		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"text\" id=\"name\" name=\"name\" value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(name)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/views/create_or_update_feature_flag_form.templ`, Line: 19, Col: 58}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"border-0 block pl-4 flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 bg-transparent\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
+			if isCreation {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"text\" id=\"name\" name=\"name\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var4 string
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(name)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/create_or_update_feature_flag_form.templ`, Line: 26, Col: 58}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"border-0 block pl-4 flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 bg-transparent\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"text\" id=\"name\" name=\"name\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var5 string
+				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(name)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/create_or_update_feature_flag_form.templ`, Line: 29, Col: 58}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"border-0 block pl-4 flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 bg-gray-300 cursor-not-allowed\" readonly>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div>")
@@ -100,9 +140,9 @@ func IsActive(isActive bool) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var4 == nil {
-			templ_7745c5c3_Var4 = templ.NopComponent
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-2/6\"><fieldset><div class=\"mt-2\"><div class=\"relative flex gap-x-3\">")
@@ -144,9 +184,9 @@ func Description(description string, isDescriptionError bool) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
+		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var7 == nil {
+			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-4/6 mt-2\"><label for=\"description\" class=\"block text-sm font-semibold leading-6 text-gray-900\">Description</label><div class=\"mt-2\">")
@@ -158,12 +198,12 @@ func Description(description string, isDescriptionError bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(description)
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/views/create_or_update_feature_flag_form.templ`, Line: 54, Col: 215}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/create_or_update_feature_flag_form.templ`, Line: 66, Col: 215}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -176,12 +216,12 @@ func Description(description string, isDescriptionError bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(description)
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/views/create_or_update_feature_flag_form.templ`, Line: 57, Col: 200}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/create_or_update_feature_flag_form.templ`, Line: 69, Col: 200}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -214,21 +254,21 @@ func ExpirationDate(expirationDate string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
+		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var10 == nil {
+			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-2/6 mt-2\"><label for=\"expirationDate\" class=\"block text-sm font-semibold leading-6 text-gray-900\">Expiration Date</label><div class=\"mt-2\"><div class=\"flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md\"><input class=\"block flex-1 border-0 bg-transparent py-1.5 pl-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6\" type=\"date\" id=\"expirationDate\" name=\"expirationDate\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(expirationDate)
+		var templ_7745c5c3_Var11 string
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(expirationDate)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/views/create_or_update_feature_flag_form.templ`, Line: 71, Col: 84}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/create_or_update_feature_flag_form.templ`, Line: 83, Col: 84}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -240,7 +280,7 @@ func ExpirationDate(expirationDate string) templ.Component {
 	})
 }
 
-func Form(featureFlag ff_entity.FeatureFlagResponse, err types.ErrorCreateFeatureFlagForm) templ.Component {
+func Form(featureFlag ff_entity.FeatureFlagResponse, err types.ErrorCreateFeatureFlagForm, isCreation bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -256,20 +296,56 @@ func Form(featureFlag ff_entity.FeatureFlagResponse, err types.ErrorCreateFeatur
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var10 == nil {
-			templ_7745c5c3_Var10 = templ.NopComponent
+		templ_7745c5c3_Var12 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var12 == nil {
+			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"w-full\" id=\"feature_flag_form\" hx-post=\"/feature-flags\" hx-swap=\"outterHTML swap:100ms\" hx-encoding=\"application/json\" onsubmit=\"return false;\" hx-target=\"body\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ_7745c5c3_Var10.Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+		if isCreation {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"w-full\" id=\"feature_flag_form\" hx-post=\"/feature-flags\" hx-swap=\"outterHTML swap:100ms\" hx-encoding=\"application/json\" onsubmit=\"return false;\" hx-target=\"body\" hx-replace-url=\"/feature-flags\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templ_7745c5c3_Var12.Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</form>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"w-full\" id=\"feature_flag_form\" hx-put=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var13 string
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("/feature-flags/" + featureFlag.ID)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/views/create_or_update_feature_flag_form.templ`, Line: 97, Col: 89}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outterHTML swap:100ms\" hx-encoding=\"application/json\" onsubmit=\"return false;\" hx-target=\"body\" hx-replace-url=\"/feature-flags\" hx-include=\"[name=&#39;name&#39;]\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templ_7745c5c3_Var12.Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</form>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</form>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -293,12 +369,12 @@ func NewFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, err types.Err
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var11 == nil {
-			templ_7745c5c3_Var11 = templ.NopComponent
+		templ_7745c5c3_Var14 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var14 == nil {
+			templ_7745c5c3_Var14 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var12 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var15 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -314,7 +390,7 @@ func NewFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, err types.Err
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = Name(featureFlag.Name, err.IsNameError).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = Name(featureFlag.Name, err.IsNameError, true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -336,7 +412,7 @@ func NewFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, err types.Err
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = Form(featureFlag, err).Render(templ.WithChildren(ctx, templ_7745c5c3_Var12), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Form(featureFlag, err, true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var15), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -344,7 +420,7 @@ func NewFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, err types.Err
 	})
 }
 
-func UpdateFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, resultError types.ErrorCreateFeatureFlagForm) templ.Component {
+func UpdateFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, err types.ErrorCreateFeatureFlagForm) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -360,79 +436,50 @@ func UpdateFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, resultErro
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var13 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var13 == nil {
-			templ_7745c5c3_Var13 = templ.NopComponent
+		templ_7745c5c3_Var16 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var16 == nil {
+			templ_7745c5c3_Var16 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"w-full\" id=\"feature-flag-form\" hx-put=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var14 string
-		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs("/feature-flags/" + featureFlag.ID)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/views/create_or_update_feature_flag_form.templ`, Line: 119, Col: 87}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"body\" hx-swap=\"outterHTML swap:100ms\" hx-replace-url=\"/feature-flags\" hx-encoding=\"application/json\" onsubmit=\"return false;\"><div class=\"mt-4\"><div class=\"border-b border-gray-900/10 pb-2\"><h2 class=\"capitalize text-xl py-4\">Update Feature Flag</h2></div></div><div class=\"grid grid-cols-1 gap-4 mt-4\"><!-- Name --><div class=\"w-4/6\"><label for=\"name\" class=\"block text-sm font-semibold leading-6 text-gray-900\">Name</label><div class=\"mt-2\"><div class=\"flex w-full rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600\"><input class=\"border-0 block pl-4 flex-1  py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 bg-gray-200\" type=\"text\" id=\"name\" name=\"name\" value=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var15 string
-		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(featureFlag.Name)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/views/create_or_update_feature_flag_form.templ`, Line: 138, Col: 70}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" disabled></div></div></div><!-- Is Active --><div class=\"w-2/6\"><fieldset><div class=\"mt-2\"><div class=\"relative flex gap-x-3\"><div class=\"flex h-6 items-center\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if featureFlag.IsActive {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input id=\"isActive\" name=\"isActive\" type=\"checkbox\" class=\"h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600\" checked>")
+		templ_7745c5c3_Var17 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><div class=\"mt-4\"><div class=\"border-b border-gray-900/10 pb-2\"><h2 class=\"capitalize text-xl py-4\">Update Feature Flag</h2></div></div><div class=\"grid grid-cols-1 gap-4 mt-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input id=\"isActive\" name=\"isActive\" type=\"checkbox\" class=\"h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600\">")
+			templ_7745c5c3_Err = Name(featureFlag.Name, err.IsNameError, false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"text-sm leading-6 gap-x-2\"><label for=\"isActive\" class=\"font-semibold text-gray-900\">Is Active?</label></div></div></div></fieldset></div><!-- Description --><div class=\"w-4/6 mt-2\"><label for=\"description\" class=\"block text-sm font-semibold leading-6 text-gray-900\">Description</label><div class=\"mt-2\"><textarea type=\"text\" id=\"description\" name=\"description\" rows=\"3\" class=\"border-0 block w-full p-4 resize-none rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600\">")
-		if templ_7745c5c3_Err != nil {
+			templ_7745c5c3_Err = IsActive(featureFlag.IsActive).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = Description(featureFlag.Description, err.IsDescriptionError).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = ExpirationDate(featureFlag.ExpirationDate).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!-- Buttons Action --><div class=\"mt-6 flex items-center justify-end gap-2\"><!-- Cancel --><button type=\"button\" class=\"text-sm font-semibold leading-6 text-indigo-900 bg-white border-solid border-1 border-gray-200 hover:bg-gray-200\" hx-get=\"/\" hx-target=\"body\" hx-swap=\"outterHTML swap:100ms\" hx-replace-url=\"/feature-flags\">Cancel</button><!-- Update --><button type=\"submit\" class=\"text-sm font-semibold leading-6 border-solid border-1 text-white shadow-sm bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600\">Update</button></div></div></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var16 string
-		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(featureFlag.Description)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/views/create_or_update_feature_flag_form.templ`, Line: 170, Col: 216}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</textarea></div></div><!-- Expiration Date --><div class=\"w-2/6 mt-2\"><label for=\"expirationDate\" class=\"block text-sm font-semibold leading-6 text-gray-900\">Expiration Date</label><div class=\"mt-2\"><div class=\"flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md\"><input class=\"block flex-1 border-0 bg-transparent py-1.5 pl-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6\" type=\"date\" id=\"expirationDate\" name=\"expirationDate\" value=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var17 string
-		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(featureFlag.ExpirationDate)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/views/create_or_update_feature_flag_form.templ`, Line: 182, Col: 100}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div></div><!-- Buttons Action --><div class=\"mt-6 flex items-center justify-end gap-2\"><!-- Cancel --><button type=\"button\" class=\"text-sm font-semibold leading-6 text-indigo-900 bg-white border-solid border-1 border-gray-200 hover:bg-gray-200\" hx-get=\"/\" hx-target=\"body\" hx-swap=\"outterHTML swap:100ms\" hx-replace-url=\"/feature-flags\">Cancel</button><!-- Update --><button type=\"submit\" class=\"text-sm font-semibold leading-6 border-solid border-1 text-white shadow-sm bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600\">Update</button></div></div></form>")
+		})
+		templ_7745c5c3_Err = Form(featureFlag, err, false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var17), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -461,7 +508,7 @@ func CreateOrUpdateFeatureFlagPage(featureFlag ff_entity.FeatureFlagResponse, er
 			templ_7745c5c3_Var18 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"create_feature_flag_page\" class=\"w-full\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"create_or_update_feature_flag_page\" class=\"w-full\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

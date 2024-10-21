@@ -113,7 +113,7 @@ func (ffs *FeatureFlagService) UpdateFeatureFlagById(id uint, request featureFla
 		Page:  1,
 	})
 	if err != nil {
-		return errors.New(err.Error())
+		return err
 	}
 
 	if countTotal == 0 {

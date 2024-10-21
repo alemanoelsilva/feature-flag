@@ -41,7 +41,7 @@ func AssignmentFilters(featureFlag ff_entity.FeatureFlagResponse) templ.Componen
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("/feature-flags/" + featureFlag.ID + "/assignments/filters")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/assignment_list.templ`, Line: 14, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/assignment_list.templ`, Line: 14, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -99,7 +99,7 @@ func AssignmentLine(assignment p_entity.PersonWithAssignmentResponse, featureFla
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("assignment_id_" + assignment.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/assignment_list.templ`, Line: 30, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/assignment_list.templ`, Line: 30, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -112,7 +112,7 @@ func AssignmentLine(assignment p_entity.PersonWithAssignmentResponse, featureFla
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(assignment.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/assignment_list.templ`, Line: 31, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/assignment_list.templ`, Line: 31, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -125,7 +125,7 @@ func AssignmentLine(assignment p_entity.PersonWithAssignmentResponse, featureFla
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(assignment.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/assignment_list.templ`, Line: 35, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/assignment_list.templ`, Line: 35, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -138,7 +138,7 @@ func AssignmentLine(assignment p_entity.PersonWithAssignmentResponse, featureFla
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(assignment.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/assignment_list.templ`, Line: 38, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/assignment_list.templ`, Line: 38, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -162,7 +162,7 @@ func AssignmentLine(assignment p_entity.PersonWithAssignmentResponse, featureFla
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("/feature-flags/" + featureFlag.ID + "/assignments/" + assignment.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/assignment_list.templ`, Line: 48, Col: 83}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/assignment_list.templ`, Line: 48, Col: 83}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -187,7 +187,7 @@ func AssignmentLine(assignment p_entity.PersonWithAssignmentResponse, featureFla
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("/feature-flags/" + featureFlag.ID + "/assignments/" + assignment.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/assignment_list.templ`, Line: 62, Col: 83}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/assignment_list.templ`, Line: 62, Col: 83}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -282,7 +282,7 @@ func AssignmentList(assignments []p_entity.PersonWithAssignmentResponse, feature
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(featureFlag.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/assignment_list.templ`, Line: 87, Col: 110}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/assignment_list.templ`, Line: 87, Col: 110}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {

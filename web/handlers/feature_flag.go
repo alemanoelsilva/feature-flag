@@ -199,26 +199,26 @@ func (ffh *FeatureFlagHandler) CreateFeatureFlag(c echo.Context) error {
 		}
 
 		errorType := strings.Split(err.Error(), "|")[0]
-		errorMessage := strings.Split(err.Error(), "|")[1]
+		// errorMessage := strings.Split(err.Error(), "|")[1]
 
-		var resultError types.ErrorCreateFeatureFlagForm
+		var errorResponse types.ErrorCreateFeatureFlagForm
 
 		if errorType == "Name" {
-			resultError.HasError = true
-			resultError.IsNameError = true
-			resultError.ErrorMessage = errorMessage
+			errorResponse.HasError = true
+			errorResponse.IsNameError = true
+			errorResponse.ErrorMessage = strings.Split(err.Error(), "|")[1]
 		} else if errorType == "Description" {
-			resultError.HasError = true
-			resultError.IsDescriptionError = true
-			resultError.ErrorMessage = errorMessage
+			errorResponse.HasError = true
+			errorResponse.IsDescriptionError = true
+			errorResponse.ErrorMessage = strings.Split(err.Error(), "|")[1]
 		} else {
-			resultError.HasError = true
-			resultError.IsRequestError = true
-			resultError.ErrorMessage = err.Error()
+			errorResponse.HasError = true
+			errorResponse.IsRequestError = true
+			errorResponse.ErrorMessage = err.Error()
 		}
 
-		c.Response().Header().Add("HX-Retarget", "#create_feature_flag_page")
-		return utils.Render(c, http.StatusConflict, views.CreateOrUpdateFeatureFlagPage(ff, resultError))
+		c.Response().Header().Add("HX-Retarget", "#create_or_update_feature_flag_page")
+		return utils.Render(c, http.StatusConflict, views.CreateOrUpdateFeatureFlagPage(ff, errorResponse))
 	}
 
 	featureFlags, _, _ := ffh.FeatureFlagService.GetFeatureFlag(model.Pagination{
@@ -241,38 +241,48 @@ func (ffh *FeatureFlagHandler) UpdateFeatureFlag(c echo.Context) error {
 	isActive := c.FormValue("isActive") == "on"
 	expirationDate := c.FormValue("expirationDate")
 
+	ffOnDB, _, _ := ffh.FeatureFlagService.GetFeatureFlag(model.Pagination{
+		Page:  1,
+		Limit: 1,
+	}, ff_entity.FeatureFlagFilters{
+		Name: name,
+	})
+
 	err = ffh.FeatureFlagService.UpdateFeatureFlagById(uint(id), ff_entity.UpdateFeatureFlag{
+		// method updates all 4 fields, getting the current isGlobal value to not set false when it is true
 		Description:    description,
 		IsActive:       isActive,
+		IsGlobal:       ffOnDB[0].IsGlobal,
 		ExpirationDate: expirationDate,
 	})
 
 	// error on feature flag creation
-	if err != nil {
-		ff := ff_entity.FeatureFlagResponse{
-			Name:           name,
-			Description:    description,
-			IsActive:       isActive,
-			ExpirationDate: expirationDate,
-		}
+	if err != nil && err.Error() != "no feature flag updated" {
+		ff := ffOnDB[0]
+
+		ff.Description = description
+		ff.IsActive = isActive
+		ff.ExpirationDate = expirationDate
 
 		errorType := strings.Split(err.Error(), "|")[0]
-		errorMessage := strings.Split(err.Error(), "|")[1]
+		// errorMessage := strings.Split(err.Error(), "|")[1]
 
-		var resultError types.ErrorCreateFeatureFlagForm
+		var errorResponse types.ErrorCreateFeatureFlagForm
 
 		if errorType == "Description" {
-			resultError.HasError = true
-			resultError.IsDescriptionError = true
-			resultError.ErrorMessage = errorMessage
+			errorResponse.HasError = true
+			errorResponse.IsDescriptionError = true
+			errorResponse.ErrorMessage = strings.Split(err.Error(), "|")[1]
 		} else {
-			resultError.HasError = true
-			resultError.IsRequestError = true
-			resultError.ErrorMessage = err.Error()
+			errorResponse.HasError = true
+			errorResponse.IsRequestError = true
+			errorResponse.ErrorMessage = err.Error()
 		}
 
-		c.Response().Header().Add("HX-Retarget", "#create_feature_flag_page")
-		return utils.Render(c, http.StatusConflict, views.CreateOrUpdateFeatureFlagPage(ff, resultError))
+		fmt.Printf("\n\nerrorResponse %errorResponse\n\n", errorResponse)
+
+		c.Response().Header().Add("HX-Retarget", "#create_or_update_feature_flag_page")
+		return utils.Render(c, http.StatusConflict, views.CreateOrUpdateFeatureFlagPage(ff, errorResponse))
 	}
 
 	featureFlags, _, _ := ffh.FeatureFlagService.GetFeatureFlag(model.Pagination{

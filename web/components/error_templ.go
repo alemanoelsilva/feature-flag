@@ -34,7 +34,7 @@ func ErrorMessage(show bool, message string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if show {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-trigger=\"error_event from:body\" hx-get=\"/feature-flags/component/set-error\" hx-swap=\"outterHTML\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-trigger=\"error_event from:body\" hx-get=\"/feature-flags/component/error/dismiss\" hx-swap=\"outterHTML\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -46,13 +46,13 @@ func ErrorMessage(show bool, message string) templ.Component {
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/error.templ`, Line: 11, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/error.templ`, Line: 11, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span hx-get=\"/feature-flags/component/set-error\" hx-trigger=\"click\" hx-target=\"#error_message\" class=\"cursor-pointer ml-1 font-bold underline decoration-solid\">Dismiss</span></div>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span hx-get=\"/feature-flags/component/error/dismiss\" hx-trigger=\"click\" hx-target=\"#error_message\" class=\"cursor-pointer ml-1 font-bold underline decoration-solid\">Dismiss</span></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

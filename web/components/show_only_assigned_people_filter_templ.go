@@ -40,7 +40,7 @@ func ShowOnlyAssignedPeopleFilter(featureFlag ff_entity.FeatureFlagResponse) tem
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("/feature-flags/" + featureFlag.ID + "/component/show-only-assigned-people")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/show_only_assigned_people_filter.templ`, Line: 9, Col: 86}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/show_only_assigned_people_filter.templ`, Line: 9, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -58,7 +58,7 @@ func ShowOnlyAssignedPeopleFilter(featureFlag ff_entity.FeatureFlagResponse) tem
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("/feature-flags/" + featureFlag.ID + "/assignments/filters")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/show_only_assigned_people_filter.templ`, Line: 14, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/show_only_assigned_people_filter.templ`, Line: 14, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -76,7 +76,7 @@ func ShowOnlyAssignedPeopleFilter(featureFlag ff_entity.FeatureFlagResponse) tem
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("/feature-flags/" + featureFlag.ID + "/assignments/filters")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templ/components/show_only_assigned_people_filter.templ`, Line: 19, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/show_only_assigned_people_filter.templ`, Line: 19, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {

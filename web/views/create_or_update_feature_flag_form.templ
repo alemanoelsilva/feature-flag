@@ -6,18 +6,30 @@ ff_entity "ff/internal/feature_flag/entity"
 "ff/web/components"
 )
 
-templ Name(name string, isNameError bool) {
+templ Name(name string, isNameError bool, isCreation bool) {
 <div class="w-4/6">
   <label for="name" class="block text-sm font-semibold leading-6 text-gray-900">Name</label>
   <div class="mt-2">
     <div
       class="flex w-full rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
       if isNameError {
+      if isCreation {
       <input type="text" id="name" name="name" value={name}
         class="border-2 border-red-400 block pl-4 flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 bg-transparent" />
       } else {
       <input type="text" id="name" name="name" value={name}
+        class="border-2 border-red-400 block pl-4 flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 bg-gray-300 cursor-not-allowed"
+        readonly />
+      }
+      } else {
+      if isCreation {
+      <input type="text" id="name" name="name" value={name}
         class="border-0 block pl-4 flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 bg-transparent" />
+      } else {
+      <input type="text" id="name" name="name" value={name}
+        class="border-0 block pl-4 flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 bg-gray-300 cursor-not-allowed"
+        readonly />
+      }
       }
     </div>
   </div>
@@ -74,15 +86,26 @@ templ ExpirationDate(expirationDate string) {
 </div>
 }
 
-templ Form(featureFlag ff_entity.FeatureFlagResponse, err types.ErrorCreateFeatureFlagForm) {
-<form class="w-full" id="feature_flag_form" hx-post="/feature-flags" hx-swap="outterHTML swap:100ms"
-  hx-encoding="application/json" onsubmit="return false;" hx-target="body">
-  { children... }
-</form>
+templ Form(featureFlag ff_entity.FeatureFlagResponse, err types.ErrorCreateFeatureFlagForm, isCreation bool) {
+<div>
+  if isCreation {
+  <form class="w-full" id="feature_flag_form" hx-post="/feature-flags" hx-swap="outterHTML swap:100ms"
+    hx-encoding="application/json" onsubmit="return false;" hx-target="body" hx-replace-url="/feature-flags">
+    { children... }
+  </form>
+  } else {
+  <form class="w-full" id="feature_flag_form" hx-put={ "/feature-flags/" + featureFlag.ID }
+    hx-swap="outterHTML swap:100ms" hx-encoding="application/json" onsubmit="return false;" hx-target="body"
+    hx-replace-url="/feature-flags" hx-include="[name='name']">
+    { children... }
+  </form>
+  }
+</div>
+
 }
 
 templ NewFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, err types.ErrorCreateFeatureFlagForm) {
-@Form(featureFlag, err) {
+@Form(featureFlag, err, true) {
 <div>
   <div class="mt-4">
     <div class="border-b border-gray-900/10 pb-2">
@@ -92,7 +115,7 @@ templ NewFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, err types.Er
   </div>
 
   <div class="grid grid-cols-1 gap-4 mt-4">
-    @Name(featureFlag.Name, err.IsNameError)
+    @Name(featureFlag.Name, err.IsNameError, true)
     @IsActive(featureFlag.IsActive)
     @Description(featureFlag.Description, err.IsDescriptionError)
     @ExpirationDate(featureFlag.ExpirationDate)
@@ -115,11 +138,9 @@ templ NewFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, err types.Er
 }
 }
 
-templ UpdateFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, resultError types.ErrorCreateFeatureFlagForm) {
-<form class="w-full" id="feature-flag-form" hx-put={ "/feature-flags/" + featureFlag.ID } hx-target="body"
-  hx-swap="outterHTML swap:100ms" hx-replace-url="/feature-flags" hx-encoding="application/json"
-  onsubmit="return false;">
-
+templ UpdateFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, err types.ErrorCreateFeatureFlagForm) {
+@Form(featureFlag, err, false) {
+<div>
   <div class="mt-4">
     <div class="border-b border-gray-900/10 pb-2">
       <h2 class="capitalize text-xl py-4">Update Feature Flag</h2>
@@ -127,62 +148,10 @@ templ UpdateFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, resultErr
   </div>
 
   <div class="grid grid-cols-1 gap-4 mt-4">
-    <!-- Name -->
-    <div class="w-4/6">
-      <label for="name" class="block text-sm font-semibold leading-6 text-gray-900">Name</label>
-      <div class="mt-2">
-        <div
-          class="flex w-full rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
-          <input
-            class="border-0 block pl-4 flex-1  py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 bg-gray-200"
-            type="text" id="name" name="name" value={ featureFlag.Name } disabled />
-        </div>
-      </div>
-    </div>
-
-    <!-- Is Active -->
-    <div class="w-2/6">
-      <fieldset>
-        <div class="mt-2">
-          <div class="relative flex gap-x-3">
-            <div class="flex h-6 items-center">
-              if featureFlag.IsActive {
-              <input id="isActive" name="isActive" type="checkbox"
-                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" checked />
-              } else {
-              <input id="isActive" name="isActive" type="checkbox"
-                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-              }
-            </div>
-            <div class="text-sm leading-6 gap-x-2">
-              <label for="isActive" class="font-semibold text-gray-900">Is Active?</label>
-            </div>
-          </div>
-        </div>
-      </fieldset>
-    </div>
-
-    <!-- Description -->
-    <div class="w-4/6 mt-2">
-      <label for="description" class="block text-sm font-semibold leading-6 text-gray-900">Description</label>
-      <div class="mt-2">
-        <textarea type="text" id="description" name="description" rows="3"
-          class="border-0 block w-full p-4 resize-none rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600">{ featureFlag.Description }</textarea>
-      </div>
-    </div>
-
-    <!-- Expiration Date -->
-    <div class="w-2/6 mt-2">
-      <label for="expirationDate" class="block text-sm font-semibold leading-6 text-gray-900">Expiration Date</label>
-      <div class="mt-2">
-        <div
-          class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-          <input
-            class="block flex-1 border-0 bg-transparent py-1.5 pl-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-            type="date" id="expirationDate" name="expirationDate" value={ featureFlag.ExpirationDate }>
-        </div>
-      </div>
-    </div>
+    @Name(featureFlag.Name, err.IsNameError, false)
+    @IsActive(featureFlag.IsActive)
+    @Description(featureFlag.Description, err.IsDescriptionError)
+    @ExpirationDate(featureFlag.ExpirationDate)
 
     <!-- Buttons Action -->
     <div class="mt-6 flex items-center justify-end gap-2">
@@ -196,13 +165,13 @@ templ UpdateFeatureFlagForm(featureFlag ff_entity.FeatureFlagResponse, resultErr
         Update
       </button>
     </div>
-
   </div>
-</form>
+</div>
+}
 }
 
 templ CreateOrUpdateFeatureFlagPage(featureFlag ff_entity.FeatureFlagResponse, err types.ErrorCreateFeatureFlagForm) {
-<div id="create_feature_flag_page" class="w-full">
+<div id="create_or_update_feature_flag_page" class="w-full">
   if featureFlag.ID == "" {
   @NewFeatureFlagForm(featureFlag, err)
   } else {

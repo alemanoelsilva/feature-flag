@@ -42,13 +42,13 @@ templ FeatureFlagLine(featureFlag ff_entity.FeatureFlagResponse) {
   <td class="table-cell px-2 py-2">
     if featureFlag.IsActive {
     <div class="inline-block align-baseline cursor-pointer" hx-put={ "/feature-flags/status/" + featureFlag.ID }
-      hx-target="#feature_flag_table" hx-swap="outerHTML swap:300ms" hx-include="previous .feature_flag_filters">
+      hx-target="#feature_flag_table" hx-swap="outerHTML swap:300ms" hx-include="[name='name'],[name='isActive']">
       <i class="fa-solid fa-check" style="color: #63E6BE;"></i>
       <span class="ml-1">Active</span>
     </div>
     } else {
     <div class="inline-block align-baseline cursor-pointer" hx-put={ "/feature-flags/status/" + featureFlag.ID }
-      hx-target="#feature_flag_table" hx-swap="outerHTML swap:300ms" hx-include="previous .feature_flag_filters">
+      hx-target="#feature_flag_table" hx-swap="outerHTML swap:300ms" hx-include="[name='name'],[name='isActive']">
       <i class="fa-solid fa-circle-xmark" style="color: #ff0000;"></i>
       <span class="ml-1">Inactive</span>
     </div>

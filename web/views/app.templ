@@ -29,13 +29,12 @@ templ AppPage() {
 			cursor: pointer;
 		}
 	</style>
-
 	<script type="text/javascript">
 		document.addEventListener("DOMContentLoaded", (event) => {
 			document.body.addEventListener('htmx:beforeSwap', function (evt) {
 				if ([400, 404, 409, 401, 403].includes(evt.detail.xhr.status)) {
 					console.log("setting status to paint");
-					// allow 422 responses to swap as we are using this as a signal that
+					// allow 400 errors to swap as we are using this as a signal that
 					// a form was submitted with bad data and want to rerender with the
 					// errors
 					//

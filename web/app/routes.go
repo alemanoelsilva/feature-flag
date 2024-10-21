@@ -99,6 +99,6 @@ func setupRoutes(e *echo.Echo) {
 	g.GET("/component/header", ch.GetHeader)
 
 	//* error message TODO: search more about it
-	g.GET("/component/set-error", ch.DismissErrorMessage)
+	g.GET("/component/error/dismiss", ch.DismissErrorMessage)
 
 }

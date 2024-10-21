@@ -1,4 +1,4 @@
-package featureflag
+package assignment
 
 import (
 	"errors"
@@ -6,17 +6,22 @@ import (
 
 	assignmentEntity "ff/internal/assignment/entity"
 	"ff/internal/db/model"
-	repo "ff/internal/db/repository"
 
 	"github.com/rs/zerolog"
 )
 
+type AssignmentRepository interface {
+	ApplyAssignment(assignment model.Assignment) error
+	GetAssignmentsByPersonAndFeatureFlagId(personId, featureFlagId uint) (model.Assignment, error)
+	DeleteAssignment(assignment model.Assignment) error
+}
+
 type AssignmentService struct {
-	Repository repo.AssignmentRepository
+	Repository AssignmentRepository
 	Logger     *zerolog.Logger
 }
 
-func LoadService(r repo.AssignmentRepository, l *zerolog.Logger) *AssignmentService {
+func LoadService(r AssignmentRepository, l *zerolog.Logger) *AssignmentService {
 	return &AssignmentService{
 		Logger:     l,
 		Repository: r,

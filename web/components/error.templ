@@ -1,0 +1,19 @@
+package components
+
+templ ErrorMessage(show bool, message string) {
+<div id="error_message">
+  if show {
+  <div hx-trigger="error_event from:body" hx-get="/feature-flags/component/set-error" hx-swap="outterHTML">
+    if message != "" {
+    <div class="fixed bottom-4 left-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-lg"
+      role="alert">
+      <strong class="font-bold">Error:</strong>
+      <span class="block sm:inline">{ message }</span>
+      <span hx-get="/feature-flags/component/set-error" hx-trigger="click" hx-target="#error_message"
+        class="cursor-pointer ml-1 font-bold underline decoration-solid">Dismiss</span>
+    </div>
+    }
+  </div>
+  }
+</div>
+}

@@ -2,21 +2,27 @@ package featureflag
 
 import (
 	"errors"
+	"strconv"
 
 	"ff/internal/db/model"
-	repo "ff/internal/db/repository"
 	featureFlagEntity "ff/internal/feature_flag/entity"
 	personEntity "ff/internal/person/entity"
 
 	"github.com/rs/zerolog"
 )
 
+type FeatureFlagRepository interface {
+	AddFeatureFlag(featureFlag model.FeatureFlag) error
+	GetFeatureFlag(filters model.FeatureFlagFilters, pagination model.Pagination) ([]model.FeatureFlag, int64, error)
+	UpdateFeatureFlagById(id uint, featureFlag model.UpdateFeatureFlag) error
+}
+
 type FeatureFlagService struct {
-	Repository repo.FeatureFlagRepository
+	Repository FeatureFlagRepository
 	Logger     *zerolog.Logger
 }
 
-func LoadService(r repo.FeatureFlagRepository, l *zerolog.Logger) *FeatureFlagService {
+func LoadService(r FeatureFlagRepository, l *zerolog.Logger) *FeatureFlagService {
 	return &FeatureFlagService{
 		Logger:     l,
 		Repository: r,
@@ -55,21 +61,18 @@ func (ffs *FeatureFlagService) CreateFeatureFlag(request featureFlagEntity.Featu
 	})
 }
 
-func (ffs *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, isActive *bool, isGlobal *bool, id uint, personId uint) ([]featureFlagEntity.FeatureFlagResponse, int64, error) {
+func (ffs *FeatureFlagService) GetFeatureFlag(pagination model.Pagination, filters featureFlagEntity.FeatureFlagFilters) ([]featureFlagEntity.FeatureFlagResponse, int64, error) {
 	ffs.Logger.Info().Msg("Getting Feature Flag")
 
-	var pagination model.Pagination
-	pagination.Page = page
-	pagination.Limit = limit
+	filter := model.FeatureFlagFilters{
+		ID:       filters.ID,
+		Name:     filters.Name,
+		IsActive: filters.IsActive,
+		IsGlobal: filters.IsGlobal,
+		PersonID: filters.PersonID,
+	}
 
-	var filters model.FeatureFlagFilters
-	filters.Name = name
-	filters.IsActive = isActive
-	filters.IsGlobal = isGlobal
-	filters.ID = id
-	filters.PersonID = personId
-
-	featureFlags, totalCount, err := ffs.Repository.GetFeatureFlag(filters, pagination)
+	featureFlags, totalCount, err := ffs.Repository.GetFeatureFlag(filter, pagination)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -77,7 +80,7 @@ func (ffs *FeatureFlagService) GetFeatureFlag(page int, limit int, name string, 
 	var featureFlagResponses []featureFlagEntity.FeatureFlagResponse
 	for _, ffDB := range featureFlags {
 		featureFlagResponses = append(featureFlagResponses, featureFlagEntity.FeatureFlagResponse{
-			ID:             ffDB.ID,
+			ID:             strconv.Itoa(int(ffDB.ID)),
 			Name:           ffDB.Name,
 			Description:    ffDB.Description,
 			IsActive:       ffDB.IsActive,

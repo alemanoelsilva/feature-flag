@@ -5,12 +5,6 @@ import (
 	model "ff/internal/db/model"
 )
 
-type FeatureFlagRepository interface {
-	AddFeatureFlag(featureFlag model.FeatureFlag) error
-	GetFeatureFlag(filters model.FeatureFlagFilters, pagination model.Pagination) ([]model.FeatureFlag, int64, error)
-	UpdateFeatureFlagById(id uint, featureFlag model.UpdateFeatureFlag) error
-}
-
 func (s *SqlRepository) AddFeatureFlag(featureFlag model.FeatureFlag) error {
 	if result := s.DB.Debug().Create(&featureFlag); result.Error != nil {
 		s.Logger.Error().Err(result.Error)
@@ -25,7 +19,7 @@ func (s *SqlRepository) GetFeatureFlag(filters model.FeatureFlagFilters, paginat
 
 	// apply filters
 	if filters.Name != "" {
-		query.Where("feature_flags.name = ?", filters.Name)
+		query.Where("feature_flags.name LIKE ?", "%"+filters.Name+"%")
 	}
 
 	// this is an optional filter, it can be true/false or not be sent

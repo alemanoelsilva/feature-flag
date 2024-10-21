@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	auth "ff/internal/auth"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -23,6 +24,8 @@ func ValidateCookie(next echo.HandlerFunc) echo.HandlerFunc {
 		if !authInfo.IsAdmin {
 			return echo.NewHTTPError(http.StatusForbidden, "You are not allowed to perform this action")
 		}
+
+		fmt.Printf("AUTH %v", authInfo)
 
 		c.Set("auth_info", authInfo)
 

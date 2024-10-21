@@ -3,19 +3,24 @@ package http
 import (
 	"errors"
 	middlewares "ff/api/middlewares"
-	person "ff/internal/person"
-	"fmt"
+	"ff/internal/db/model"
+	p_entity "ff/internal/person/entity"
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
-type PeopleEchoHandler struct {
-	PeopleService person.PeopleService
+type PersonService interface {
+	GetPeopleAssignmentByFeatureFlag(pagination model.Pagination, filters p_entity.PersonFilters) ([]p_entity.PersonWithAssignmentResponse, int64, error)
+	GetAssignedFeatureFlagsByPersonId(id uint) ([]p_entity.AssignedFeatureFlagResponse, error)
 }
 
-func NewPersonEchoHandler(person person.PeopleService, e *echo.Echo) {
+type PeopleEchoHandler struct {
+	PeopleService PersonService
+}
+
+func NewPersonEchoHandler(person PersonService, e *echo.Echo) {
 	handler := &PeopleEchoHandler{
 		PeopleService: person,
 	}
@@ -26,40 +31,9 @@ func NewPersonEchoHandler(person person.PeopleService, e *echo.Echo) {
 func LoadPeopleRoutes(e *echo.Echo, handler *PeopleEchoHandler) {
 	group := e.Group("/api/feature-flags")
 
-	group.GET("/v1/people", handler.getPersonHandler, middlewares.ValidateCookie)
 	group.GET("/v1/people/feature-flags/:id", handler.getPersonWithAssignmentHandler, middlewares.ValidateCookie)
 	group.GET("/v1/people/:id/assigned-feature-flags", handler.getAssignedFeatureFlagsByPersonIdHandler)
-}
-
-func (e *PeopleEchoHandler) getPersonHandler(c echo.Context) error {
-	response := ResponseJSON{c: c}
-
-	page, _ := strconv.Atoi(c.QueryParam("page"))
-	limit, _ := strconv.Atoi(c.QueryParam("limit"))
-	name := c.QueryParam("name")
-	authInfo := c.Get("auth_info")
-
-	fmt.Println(authInfo)
-
-	if page <= 1 {
-		page = 1 // Default page
-	}
-	if limit <= 0 {
-		limit = 10 // Default limit
-	}
-
-	people, totalCount, err := e.PeopleService.GetPeople(page, limit, name)
-	if err != nil {
-		return response.ErrorHandler(http.StatusInternalServerError, err)
-	}
-
-	// TODO: check it again, it is terrible
-	interfaceSlice := make([]interface{}, len(people))
-	for i, v := range people {
-		interfaceSlice[i] = v
-	}
-
-	return response.PaginationHandler(interfaceSlice, totalCount)
+	// TODO: get feature flag / 1/ person / 1/ to get a single register? make sense?
 }
 
 func (e *PeopleEchoHandler) getPersonWithAssignmentHandler(c echo.Context) error {
@@ -94,7 +68,18 @@ func (e *PeopleEchoHandler) getPersonWithAssignmentHandler(c echo.Context) error
 		limit = 10 // Default limit
 	}
 
-	people, totalCount, err := e.PeopleService.GetPeopleAssignmentByFeatureFlag(page, limit, uint(id), name, isAssigned)
+	pagination := model.Pagination{
+		Page:  page,
+		Limit: limit,
+	}
+
+	filters := p_entity.PersonFilters{
+		FeatureFlagID: uint(id),
+		Name:          name,
+		IsAssigned:    isAssigned,
+	}
+
+	people, totalCount, err := e.PeopleService.GetPeopleAssignmentByFeatureFlag(pagination, filters)
 	if err != nil {
 		return response.ErrorHandler(http.StatusInternalServerError, err)
 	}

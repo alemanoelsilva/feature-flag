@@ -1,0 +1,13 @@
+package views
+
+import (
+	p_entity "ff/internal/person/entity"
+	ff_entity "ff/internal/feature_flag/entity"
+  "ff/web/components"
+)
+
+templ AssignmentsPage(assignments []p_entity.PersonWithAssignmentResponse, featureFlag ff_entity.FeatureFlagResponse) {
+  @AppPage() {
+    @components.AssignmentList(assignments, featureFlag)
+  }
+}

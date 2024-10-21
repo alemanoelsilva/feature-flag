@@ -5,12 +5,6 @@ import (
 	model "ff/internal/db/model"
 )
 
-type AssignmentRepository interface {
-	ApplyAssignment(assignment model.Assignment) error
-	GetAssignmentsByPersonAndFeatureFlagId(personId, featureFlagId uint) (model.Assignment, error)
-	DeleteAssignment(assignment model.Assignment) error
-}
-
 func (s *SqlRepository) ApplyAssignment(assignment model.Assignment) error {
 	if result := s.DB.Debug().Create(&assignment); result.Error != nil {
 		s.Logger.Error().Err(result.Error)

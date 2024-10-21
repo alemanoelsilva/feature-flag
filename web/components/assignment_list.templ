@@ -1,0 +1,106 @@
+package components
+
+import (
+p_entity "ff/internal/person/entity"
+ff_entity "ff/internal/feature_flag/entity"
+)
+
+templ AssignmentFilters(featureFlag ff_entity.FeatureFlagResponse) {
+<div id="assignment_filters">
+  <div class="flex justify-between py-4">
+    <div>
+      <input type="text" id="person-name" name="name" placeholder="Enter Person Name"
+        class="w-64 border-1 bg-transparent ring-1 ring-inset ring-gray-300 py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 pl-4 assignment_filters"
+        hx-get={ "/feature-flags/" + featureFlag.ID + "/assignments/filters" } hx-include=".assignment_filters"
+        hx-target="#assignment_table" hx-swap="outerHTML swap:100ms" hx-trigger="input changed delay:500ms, search" />
+    </div>
+
+    <div class="flex">
+      <div class="mr-4">
+        @IsGlobalButton(featureFlag)
+      </div>
+      @ShowOnlyAssignedPeopleFilter(featureFlag)
+    </div>
+
+  </div>
+</div>
+}
+
+templ AssignmentLine(assignment p_entity.PersonWithAssignmentResponse, featureFlag ff_entity.FeatureFlagResponse) {
+<tr id={ "assignment_id_" + assignment.ID } class="table-row border-b hover:bg-gray-50">
+  <td class="table-cell px-2 py-2">{ assignment.ID }</td>
+  <td class="table-cell px-2 py-2">
+    <div class=" inline-block align-baseline cursor-pointer">
+      <i class="fa-solid fa-user" style="color: #b6b9be;"></i>
+      <span class="">{ assignment.Name }</span>
+    </div>
+  </td>
+  <td class="table-cell px-2 py-2 truncate">{ assignment.Email }</td>
+  <td class="table-cell py-2">
+    if assignment.IsAssigned {
+    if featureFlag.IsGlobal {
+    <div class="inline-block align-baseline">
+      <i class="fa-solid fa-check fa-lg" style="color: #63E6BE;"></i>
+      <span class="ml-1">Assigned</span>
+    </div>
+    } else {
+    <div class="inline-block align-baseline cursor-pointer" hx-trigger="click" hx-target="#assignment_table"
+      hx-put={ "/feature-flags/" + featureFlag.ID + "/assignments/" + assignment.ID } hx-swap="outerHTML swap:300ms"
+      hx-include=".assignment_filters">
+      <i class="fa-solid fa-check fa-lg" style="color: #63E6BE;"></i>
+      <span class="ml-1">Assigned</span>
+    </div>
+    }
+    } else {
+    if featureFlag.IsGlobal {
+    <div class="inline-block align-baseline">
+      <i class="fa-solid fa-circle-xmark fa-lg" style="color: #ff0000;"></i>
+      <span class="ml-1">Not Assigned</span>
+    </div>
+    } else {
+    <div class="inline-block align-baseline cursor-pointer" hx-trigger="click" hx-target="#assignment_table"
+      hx-put={ "/feature-flags/" + featureFlag.ID + "/assignments/" + assignment.ID } hx-swap="outerHTML swap:300ms"
+      hx-include=".assignment_filters">
+      <i class="fa-solid fa-circle-xmark fa-lg" style="color: #ff0000;"></i>
+      <span class="ml-1">Not Assigned</span>
+    </div>
+    }
+    }
+  </td>
+</tr>
+}
+
+templ AssignmentTable(assignments []p_entity.PersonWithAssignmentResponse, featureFlag ff_entity.FeatureFlagResponse) {
+<tbody id="assignment_table" class="table-row-group">
+  for _, assignment := range assignments {
+  @AssignmentLine(assignment, featureFlag)
+  }
+</tbody>
+}
+
+templ AssignmentList(assignments []p_entity.PersonWithAssignmentResponse, featureFlag ff_entity.FeatureFlagResponse) {
+<div id="assignment-list" class="">
+
+  @AssignmentFilters(featureFlag)
+
+  <div class="flex justify-between border-t border-gray-900/10">
+    <h2 class="text-xl py-4">People to Assign to: <span class="underline decoration-dashed">{ featureFlag.Name }</span>
+    </h2>
+  </div>
+
+  <table class="table-fixed w-full text-sm text-left">
+    <thead class="table-header-group uppercase">
+      <tr class="table-row">
+        <th id="id" class="table-cell text-left px-2 py-2 w-4">ID</th>
+        <th id="name" class="table-cell text-left px-2 py-2 w-16">Name</th>
+        <th id="email" class="table-cell text-left px-2 py-2 w-36">Email</th>
+        <th id="status" class="table-cell text-left py-2 w-10">Status</th>
+      </tr>
+    </thead>
+
+    @AssignmentTable(assignments, featureFlag)
+
+  </table>
+
+</div>
+}

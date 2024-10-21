@@ -1,0 +1,29 @@
+package components
+
+import (
+ff_entity "ff/internal/feature_flag/entity"
+)
+
+templ ShowOnlyAssignedPeopleFilter(featureFlag ff_entity.FeatureFlagResponse) {
+<div class="mt-2 inline-block align-middle" hx-trigger="is_global_event from:body" hx-swap="outerHTML"
+  hx-get={ "/feature-flags/" + featureFlag.ID + "/component/show-only-assigned-people" }>
+  <div class="flex gap-x-2">
+    <div class="flex h-6 items-center">
+      if featureFlag.IsGlobal {
+      <input class="h-5 w-5 rounded accent-indigo-900 assignment_filters" id="assigned_person" name="isAssigned"
+        type="checkbox" hx-get={ "/feature-flags/" + featureFlag.ID + "/assignments/filters" }
+        hx-include=".assignment_filters" hx-target="#assignment_table" hx-trigger="click" hx-swap="outerHTML swap:100ms"
+        disabled />
+      } else {
+      <input class="h-5 w-5 rounded  accent-indigo-900 assignment_filters" id="assigned_person" name="isAssigned"
+        type="checkbox" hx-get={ "/feature-flags/" + featureFlag.ID + "/assignments/filters" }
+        hx-include=".assignment_filters" hx-target="#assignment_table" hx-trigger="click"
+        hx-swap="outerHTML swap:100ms" />
+      }
+    </div>
+    <div class="text-sm leading-6">
+      <label for="assigned_person" class="font-medium text-gray-900">Show Assigned People</label>
+    </div>
+  </div>
+</div>
+}

@@ -62,7 +62,7 @@ func (ff *UpdateFeatureFlag) Validate() error {
 }
 
 type FeatureFlagResponse struct {
-	ID             uint                        `json:"id"`
+	ID             string                      `json:"id"`
 	Name           string                      `json:"name"`
 	Description    string                      `json:"description"`
 	IsActive       bool                        `json:"isActive"`
@@ -73,8 +73,16 @@ type FeatureFlagResponse struct {
 	Person         personEntity.PersonResponse `json:"person"`
 }
 
-type AssignedFeatureFlagResponse struct {
-	ID         uint   `json:"id"`
-	Name       string `json:"name"`
-	IsAssigned bool   `json:"isAssigned"`
+// type AssignedFeatureFlagResponse struct {
+// 	ID         uint   `json:"id"`
+// 	Name       string `json:"name"`
+// 	IsAssigned bool   `json:"isAssigned"`
+// }
+
+type FeatureFlagFilters struct {
+	ID       uint   `json:"id"`
+	Name     string `json:"name"`
+	PersonID uint   `json:"personId"`
+	IsActive *bool  `json:"isActive"`
+	IsGlobal *bool  `json:"isGlobal"`
 }

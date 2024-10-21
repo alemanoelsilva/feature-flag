@@ -1,0 +1,12 @@
+package views
+
+import (
+	ff_entity "ff/internal/feature_flag/entity"
+  "ff/web/components"
+)
+
+templ FeatureFlagsPage(featureFlag []ff_entity.FeatureFlagResponse) {
+  @AppPage() {
+    @components.FeatureFlagList(featureFlag)
+  }
+}

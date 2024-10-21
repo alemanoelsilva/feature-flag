@@ -44,9 +44,9 @@ func main() {
 	e.Use(middleware.Logger())
 
 	logger.Info().Msg("Initializing Handlers")
-	handler.NewFeatureFlagEchoHandler(*featureFlagService, e)
-	handler.NewAssignmentEchoHandler(*assignmentService, e)
-	handler.NewPersonEchoHandler(*personService, e)
+	handler.NewFeatureFlagEchoHandler(featureFlagService, e)
+	handler.NewAssignmentEchoHandler(assignmentService, e)
+	handler.NewPersonEchoHandler(personService, e)
 
 	// Start the server
 	logger.Info().Msg(fmt.Sprintf("Starting Server on port %s", config.AppConfig.Port))

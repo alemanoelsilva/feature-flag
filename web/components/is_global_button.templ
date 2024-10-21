@@ -1,0 +1,26 @@
+package components
+
+import (
+ff_entity "ff/internal/feature_flag/entity"
+)
+
+templ IsGlobalButton(featureFlag ff_entity.FeatureFlagResponse) {
+<div class="relative content-center" hx-get={ "/feature-flags/" + featureFlag.ID + "/component/set-global-button" }
+  hx-trigger="is_global_event from:body" hx-swap="outerHTML">
+  if featureFlag.IsGlobal {
+  <button id="globalAssignment" hx-put={ "/feature-flags/" + featureFlag.ID + "/global" } hx-target="#assignment_table"
+    hx-swap="outerHTML swap:100ms"
+    class="text-white bg-indigo-600 hover:bg-indigo-500 focus:ring-4 focus:outline-none focus-visible:outline-indigo-600 font-medium rounded-lg text-sm px-6 py-3 text-center inline-flex items-center border border-indigo-600"
+    type="button">
+    Remove Global Assignment
+  </button>
+  } else {
+  <button id="globalAssignment" hx-put={ "/feature-flags/" + featureFlag.ID + "/global" } hx-target="#assignment_table"
+    hx-swap="outerHTML swap:100ms"
+    class="border-solid border-indigo-600 text-indigo-600 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus-visible:outline-white font-medium rounded-lg text-sm px-6 py-3 text-center inline-flex items-center"
+    type="button">
+    Assign to Global
+  </button>
+  }
+</div>
+}

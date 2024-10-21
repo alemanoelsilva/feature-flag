@@ -2,8 +2,7 @@ package http
 
 import (
 	"ff/api/middlewares"
-	assignment "ff/internal/assignment"
-	assignmentEntity "ff/internal/assignment/entity"
+	a_entity "ff/internal/assignment/entity"
 	"ff/pkg/utils"
 	"fmt"
 	"net/http"
@@ -11,11 +10,16 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type AssignmentEchoHandler struct {
-	AssignmentService assignment.AssignmentService
+type AssignmentService interface {
+	ApplyAssignment(request a_entity.Assignment, personId uint) error
+	DeleteAssignment(request a_entity.Assignment, personId uint) error
 }
 
-func NewAssignmentEchoHandler(assignment assignment.AssignmentService, e *echo.Echo) {
+type AssignmentEchoHandler struct {
+	AssignmentService AssignmentService
+}
+
+func NewAssignmentEchoHandler(assignment AssignmentService, e *echo.Echo) {
 	handler := &AssignmentEchoHandler{
 		AssignmentService: assignment,
 	}
@@ -33,7 +37,7 @@ func LoadAssignmentRoutes(e *echo.Echo, handler *AssignmentEchoHandler) {
 func (e *AssignmentEchoHandler) applyAssignmentsHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
-	var input assignmentEntity.Assignment
+	var input a_entity.Assignment
 	if err := utils.GetBodyFromRequest(c, &input); err != nil {
 		return response.ErrorHandler(http.StatusBadRequest, err)
 	}
@@ -57,7 +61,7 @@ func (e *AssignmentEchoHandler) applyAssignmentsHandler(c echo.Context) error {
 func (e *AssignmentEchoHandler) removeAssignmentsHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
-	var input assignmentEntity.Assignment
+	var input a_entity.Assignment
 	if err := utils.GetBodyFromRequest(c, &input); err != nil {
 		return response.ErrorHandler(http.StatusBadRequest, err)
 	}

@@ -8,11 +8,19 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
 // TODO: how to receive it from the web
 const COOKIE = "sess=eyJwYXNzcG9ydCI6eyJ1c2VyIjoie1widXNlcklkXCI6MjkyLFwicGVyc29uSWRcIjozNTIxNyxcInVzZXJFbWFpbFwiOlwiYWxleGFuZHJlLnNpbHZhQG1pbmRlcmEuY29tXCJ9In19; sess.sig=39qe2IvY5JL9Q7gKt3gasaRSGtI"
+
+type Person struct {
+	ID         uint   `json:"id"`
+	Name       string `json:"name"`
+	Email      string `json:"email"`
+	IsAssigned bool   `json:"isAssigned"`
+}
 
 type FeatureFlag struct {
 	ID             int    `json:"id"`
@@ -32,6 +40,7 @@ type PaginationResponse struct {
 }
 
 type FeatureFlagRequest struct {
+	ID             uint   `json:"id"`
 	Name           string `json:"name"`
 	Description    string `json:"description"`
 	IsActive       bool   `json:"isActive"`
@@ -52,6 +61,15 @@ type ErrorResponse struct {
 func (ff *FeatureFlag) GetFeatureFlag() []FeatureFlag {
 	// Start constructing the base URL
 	baseURL := "http://localhost:9696/api/feature-flags/v1/feature-flags?limit=100"
+
+	// Check if the name parameter is provided
+	if ff.ID != 0 {
+		// Encode the name parameter to handle special characters
+		encodedID := url.QueryEscape(strconv.Itoa(ff.ID))
+
+		// Append the query parameter to the base URL
+		baseURL += "&id=" + encodedID
+	}
 
 	// Check if the name parameter is provided
 	if ff.Name != "" {

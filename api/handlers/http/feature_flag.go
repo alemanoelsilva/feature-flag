@@ -3,8 +3,8 @@ package http
 import (
 	"errors"
 	"ff/api/middlewares"
-	featureflag "ff/internal/feature_flag"
-	featureFlagEntity "ff/internal/feature_flag/entity"
+	"ff/internal/db/model"
+	ff_entity "ff/internal/feature_flag/entity"
 	"ff/pkg/utils"
 	"net/http"
 	"strconv"
@@ -12,11 +12,17 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type FeatureFlagEchoHandler struct {
-	FeatureFlagService featureflag.FeatureFlagService
+type FeatureFlagService interface {
+	CreateFeatureFlag(request ff_entity.FeatureFlag, personId uint) error
+	GetFeatureFlag(pagination model.Pagination, filters ff_entity.FeatureFlagFilters) ([]ff_entity.FeatureFlagResponse, int64, error)
+	UpdateFeatureFlagById(id uint, request ff_entity.UpdateFeatureFlag) error
 }
 
-func NewFeatureFlagEchoHandler(featureflag featureflag.FeatureFlagService, e *echo.Echo) {
+type FeatureFlagEchoHandler struct {
+	FeatureFlagService FeatureFlagService
+}
+
+func NewFeatureFlagEchoHandler(featureflag FeatureFlagService, e *echo.Echo) {
 	handler := &FeatureFlagEchoHandler{
 		FeatureFlagService: featureflag,
 	}
@@ -35,7 +41,7 @@ func LoadFeatureFlagsRoutes(e *echo.Echo, handler *FeatureFlagEchoHandler) {
 func (e *FeatureFlagEchoHandler) createFeatureFlagHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
-	var input featureFlagEntity.FeatureFlag
+	var input ff_entity.FeatureFlag
 	if err := utils.GetBodyFromRequest(c, &input); err != nil {
 		return response.ErrorHandler(http.StatusBadRequest, err)
 	}
@@ -103,7 +109,20 @@ func (e *FeatureFlagEchoHandler) getFeatureFlagHandler(c echo.Context) error {
 		limit = 10 // Default limit
 	}
 
-	featureFlag, totalCount, err := e.FeatureFlagService.GetFeatureFlag(page, limit, name, isActive, isGlobal, uint(id), uint(personId))
+	pagination := model.Pagination{
+		Page:  page,
+		Limit: limit,
+	}
+
+	filters := ff_entity.FeatureFlagFilters{
+		ID:       uint(id),
+		Name:     name,
+		IsActive: isActive,
+		IsGlobal: isGlobal,
+		PersonID: uint(personId),
+	}
+
+	featureFlag, totalCount, err := e.FeatureFlagService.GetFeatureFlag(pagination, filters)
 	if err != nil {
 		return response.ErrorHandler(http.StatusInternalServerError, err)
 	}
@@ -121,7 +140,7 @@ func (e *FeatureFlagEchoHandler) getFeatureFlagHandler(c echo.Context) error {
 func (e *FeatureFlagEchoHandler) updateFeatureFlagByIdHandler(c echo.Context) error {
 	response := ResponseJSON{c: c}
 
-	var input featureFlagEntity.UpdateFeatureFlag
+	var input ff_entity.UpdateFeatureFlag
 	if err := utils.GetBodyFromRequest(c, &input); err != nil {
 		return response.ErrorHandler(http.StatusBadRequest, err)
 	}

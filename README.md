@@ -49,8 +49,6 @@ This is a feature flags system that allows users to create, manage, and assign f
 
 ### Running the project
 
-```
 - API `make run-api`
 - Templ with HTMX `make run-templ`
 - Go template `make run-web` on branch `poc/htmx`
-```

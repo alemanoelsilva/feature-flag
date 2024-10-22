@@ -288,7 +288,7 @@ func AssignmentList(assignments []p_entity.PersonWithAssignmentResponse, feature
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></h2></div><table class=\"table-fixed w-full text-sm text-left\"><thead class=\"table-header-group uppercase\"><tr class=\"table-row\"><th id=\"id\" class=\"table-cell text-left px-2 py-2 w-4\">ID</th><th id=\"name\" class=\"table-cell text-left px-2 py-2 w-16\">Name</th><th id=\"email\" class=\"table-cell text-left px-2 py-2 w-36\">Email</th><th id=\"status\" class=\"table-cell text-left py-2 w-10\">Status</th></tr></thead>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></h2></div><table class=\"table-fixed w-full text-sm text-left\"><thead class=\"table-header-group uppercase\"><tr class=\"table-row\"><th id=\"id\" class=\"table-cell text-left px-2 py-2 w-4\">ID</th><th id=\"name\" class=\"table-cell text-left px-2 py-2 w-16\">Name</th><th id=\"email\" class=\"table-cell text-left px-2 py-2 w-36\">Email</th><th id=\"status\" class=\"table-cell text-left py-2 w-10 relative\">Status <i class=\"ml-1 fa-solid fa-circle-info text-gray-800 relative group\"></i> <span class=\"absolute left-0 bottom-full mb-2 w-40 bg-gray-700 text-white text-sm rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none\">To change the satus, click on each one</span></th></tr></thead>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

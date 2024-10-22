@@ -95,7 +95,7 @@ templ Message(show bool, message string, isError bool) {
   if show {
   @messageCss()
   if isError {
-  <div id="error" _="on closeMessage add .closing then wait for animationend then remove me">
+  <div id="error" _="on closeMessage add .closing then wait for animationend then remove me" >
     <div class="flex" _="on load wait for 4s then trigger closeMessage">
       <strong class="text-base font-bold">Error:</strong>
       <span class="text-base normal-case ml-2">{ message }</span>
@@ -104,7 +104,7 @@ templ Message(show bool, message string, isError bool) {
   } else {
   <div id="success" _="on closeMessage add .closing then wait for animationend then remove me">
     <div class="flex" _="on load wait for 4s then trigger closeMessage">
-      <strong class="text-base font-bold">Error:</strong>
+      <strong class="text-base font-bold">Success:</strong>
       <span class="text-base normal-case ml-2">{ message }</span>
     </div>
   </div>

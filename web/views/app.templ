@@ -3,7 +3,6 @@ package views
 import (
 "ff/web/components"
 ff_entity "ff/internal/feature_flag/entity"
-"ff/web/types"
 )
 
 templ AppPage() {
@@ -55,13 +54,18 @@ templ AppPage() {
 </head>
 
 <body class="pt-8 pl-8 pb-10 pr-6">
+	<script>
+		// Enable HTMX logging
+		htmx.logAll();
+	</script>
+
 	@components.Header()
 
 	<main id="container">
 		{ children... }
 	</main>
 
-	@components.Modal(false, ff_entity.FeatureFlagResponse{}, types.ErrorCreateFeatureFlagForm{})
+	@components.Modal(false, ff_entity.FeatureFlagResponse{})
 
 	@components.Message(false, "", false)
 </body>

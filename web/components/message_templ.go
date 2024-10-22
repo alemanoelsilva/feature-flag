@@ -79,7 +79,7 @@ func Message(show bool, message string, isError bool) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/error.templ`, Line: 101, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/message.templ`, Line: 101, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -90,14 +90,14 @@ func Message(show bool, message string, isError bool) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"success\" _=\"on closeMessage add .closing then wait for animationend then remove me\"><div class=\"flex\" _=\"on load wait for 4s then trigger closeMessage\"><strong class=\"text-base font-bold\">Error:</strong> <span class=\"text-base normal-case ml-2\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"success\" _=\"on closeMessage add .closing then wait for animationend then remove me\"><div class=\"flex\" _=\"on load wait for 4s then trigger closeMessage\"><strong class=\"text-base font-bold\">Success:</strong> <span class=\"text-base normal-case ml-2\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/error.templ`, Line: 108, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/message.templ`, Line: 108, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {

@@ -48,7 +48,7 @@ func (ffh *FeatureFlagHandler) GetFeatureFlagList(c echo.Context) error {
 	}, ff_entity.FeatureFlagFilters{})
 
 	if err != nil {
-		return utils.Message(c, "something goes wrong when attempting to get the feature flag list")
+		return utils.ErrorMessage(c, "something goes wrong when attempting to get the feature flag list")
 	}
 
 	// featureFlags := ff.GetFeatureFlag()
@@ -60,14 +60,15 @@ func (ffh *FeatureFlagHandler) GetCreateOrUpdateFeatureFlag(c echo.Context) erro
 
 	// return create form
 	if idStr == "" {
-		c.Response().Header().Add("HX-Trigger-After-Swap", "create_feature_flag_event")
-		return utils.Render(c, http.StatusOK, components.Modal(true, ff_entity.FeatureFlagResponse{}, types.ErrorCreateFeatureFlagForm{}))
+		// c.Response().Header().Add("HX-Trigger-After-Swap", "create_feature_flag_event")
+		return utils.Render(c, http.StatusOK, components.Modal(true, ff_entity.FeatureFlagResponse{}))
 	}
 
 	// otherwise, get feature flag and return the update form filled up
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return utils.Message(c, "feature flag ID is not a valid number")
+		c.Response().Header().Add("HX-Replace-Url", "/404")
+		return utils.Render(c, http.StatusNotFound, views.NotFoundPage("feature flag ID is not a valid number"))
 	}
 
 	featureFlags, _, err := ffh.FeatureFlagService.GetFeatureFlag(model.Pagination{
@@ -77,11 +78,12 @@ func (ffh *FeatureFlagHandler) GetCreateOrUpdateFeatureFlag(c echo.Context) erro
 		ID: uint(id),
 	})
 	if err != nil {
-		return utils.Message(c, "something goes wrong when attempting to get the feature flag by id")
+		c.Response().Header().Add("HX-Replace-Url", "/error")
+		return utils.Render(c, http.StatusNotFound, views.NotFoundPage("something goes wrong when attempting to get the feature flag by id"))
 	}
 
-	c.Response().Header().Add("HX-Trigger-After-Swap", "create_feature_flag_event")
-	return utils.Render(c, http.StatusOK, components.Modal(true, featureFlags[0], types.ErrorCreateFeatureFlagForm{}))
+	// c.Response().Header().Add("HX-Trigger-After-Swap", "create_feature_flag_event")
+	return utils.Render(c, http.StatusOK, components.Modal(true, featureFlags[0]))
 }
 
 func (ffh *FeatureFlagHandler) GetFeatureFlagListFiltered(c echo.Context) error {
@@ -107,7 +109,7 @@ func (ffh *FeatureFlagHandler) GetFeatureFlagListFiltered(c echo.Context) error 
 
 	if err != nil {
 		// return errors.New("something goes wrong when attempting to get the feature flag list")
-		return utils.Message(c, "something goes wrong when attempting to get the feature flag list")
+		return utils.ErrorMessage(c, "something goes wrong when attempting to get the feature flag list")
 	}
 
 	return utils.Render(c, http.StatusOK, components.FeatureFlagTable(featureFlags))
@@ -117,7 +119,7 @@ func (ffh *FeatureFlagHandler) UpdateFeatureFlagStatus(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return utils.Message(c, "feature flag id is invalid (not a number)")
+		return utils.ErrorMessage(c, "feature flag id is invalid (not a number)")
 	}
 
 	featureFlags, total, err := ffh.FeatureFlagService.GetFeatureFlag(model.Pagination{
@@ -127,10 +129,10 @@ func (ffh *FeatureFlagHandler) UpdateFeatureFlagStatus(c echo.Context) error {
 		ID: uint(id),
 	})
 	if err != nil {
-		return utils.Message(c, "something goes wrong when attempting to get the feature flag list")
+		return utils.ErrorMessage(c, "something goes wrong when attempting to get the feature flag list")
 	}
 	if total == 0 {
-		return utils.Message(c, "feature Flag ID is invalid")
+		return utils.ErrorMessage(c, "feature Flag ID is invalid")
 	}
 
 	selectedFeatureFlag := FindFeatureFlagByID(id, &featureFlags)
@@ -146,7 +148,7 @@ func (ffh *FeatureFlagHandler) UpdateFeatureFlagStatus(c echo.Context) error {
 
 	err = ffh.FeatureFlagService.UpdateFeatureFlagById(uint(id), requestToUpdate)
 	if err != nil {
-		return utils.Message(c, "something goes wrong when attempting to update the feature flag")
+		return utils.ErrorMessage(c, "something goes wrong when attempting to update the feature flag")
 	}
 
 	name := c.FormValue("name")
@@ -194,17 +196,19 @@ func (ffh *FeatureFlagHandler) CreateFeatureFlag(c echo.Context) error {
 			errorResponse.HasError = true
 			errorResponse.IsNameError = true
 			errorResponse.ErrorMessage = strings.Split(err.Error(), "|")[1]
+			c.Response().Header().Add("HX-Trigger", "isNameErrorEvent")
 		} else if errorType == "Description" {
 			errorResponse.HasError = true
 			errorResponse.IsDescriptionError = true
 			errorResponse.ErrorMessage = strings.Split(err.Error(), "|")[1]
+			c.Response().Header().Add("HX-Trigger", "isDescriptionErrorEvent")
 		} else {
 			errorResponse.HasError = true
 			errorResponse.IsRequestError = true
 			errorResponse.ErrorMessage = err.Error()
 		}
 
-		return utils.Message(c, errorResponse.ErrorMessage)
+		return utils.ErrorMessage(c, errorResponse.ErrorMessage)
 	}
 
 	c.Response().Header().Add("HX-Retarget", "#message")
@@ -217,7 +221,7 @@ func (ffh *FeatureFlagHandler) UpdateFeatureFlag(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return utils.Message(c, "feature flag ID is not a valid number")
+		return utils.ErrorMessage(c, "feature flag ID is not a valid number")
 	}
 
 	name := c.FormValue("name")
@@ -257,13 +261,14 @@ func (ffh *FeatureFlagHandler) UpdateFeatureFlag(c echo.Context) error {
 			errorResponse.HasError = true
 			errorResponse.IsDescriptionError = true
 			errorResponse.ErrorMessage = strings.Split(err.Error(), "|")[1]
+			c.Response().Header().Add("HX-Trigger", "isDescriptionErrorEvent")
 		} else {
 			errorResponse.HasError = true
 			errorResponse.IsRequestError = true
 			errorResponse.ErrorMessage = err.Error()
 		}
 
-		return utils.Message(c, errorResponse.ErrorMessage)
+		return utils.ErrorMessage(c, errorResponse.ErrorMessage)
 	}
 
 	c.Response().Header().Add("HX-Retarget", "#message")

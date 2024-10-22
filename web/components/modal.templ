@@ -2,7 +2,6 @@ package components
 
 import (
 ff_entity "ff/internal/feature_flag/entity"
-"ff/web/types"
 )
 
 templ modalCss() {
@@ -116,14 +115,14 @@ templ modalCss() {
 </style>
 }
 
-templ Modal(show bool, featureFlag ff_entity.FeatureFlagResponse, err types.ErrorCreateFeatureFlagForm) {
+templ Modal(show bool, featureFlag ff_entity.FeatureFlagResponse) {
 <div>
   if show {
   @modalCss()
   <div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
     <div class="modal-underlay" _="on click trigger closeModal"></div>
     <div id="modal_content" class="modal-content">
-      @FeatureFlagForm(featureFlag, err)
+      @FeatureFlagForm(featureFlag)
     </div>
   </div>
   }

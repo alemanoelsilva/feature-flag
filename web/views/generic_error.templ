@@ -1,12 +1,12 @@
 package views
 
-templ NotFoundPage(msg string) {
+templ GenericErrorPage(msg string) {
 @AppPage() {
 <div>
   <div>
     { msg }
   </div>
-  <button hx-get="/feature-flags" hx-target="body" hx-swap="outterHTML"  hx-replace-url="/feature-flags"
+  <button hx-get="/feature-flags" hx-target="body" hx-swap="outterHTML" hx-replace-url="/feature-flags"
     class="text-sm font-semibold leading-6 text-white shadow-sm bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
     Go to Home
   </button>

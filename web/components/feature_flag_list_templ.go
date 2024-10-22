@@ -168,7 +168,7 @@ func FeatureFlagLine(featureFlag ff_entity.FeatureFlagResponse) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"table-cell px-2 py-2 flex justify-center items-center\"><div class=\"text-center\"><!-- Edit --><i class=\"fa-regular fa-pen-to-square cursor-pointer\" style=\"color: #8f8f8f;\" hx-swap=\"innerHTML swap:100ms\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"table-cell px-2 py-2 flex justify-center items-center\"><div class=\"text-center\"><!-- Edit --><i class=\"fa-regular fa-pen-to-square cursor-pointer\" style=\"color: #8f8f8f;\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -181,14 +181,14 @@ func FeatureFlagLine(featureFlag ff_entity.FeatureFlagResponse) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#container\" hx-replace-url=\"/feature-flags/update\"></i><!-- Assignment --><i hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"body\" hx-swap=\"beforeend\"></i><!-- Assignment --><i hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("/feature-flags/" + featureFlag.ID + "/assignments")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/feature_flag_list.templ`, Line: 65, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/feature_flag_list.templ`, Line: 64, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -201,7 +201,7 @@ func FeatureFlagLine(featureFlag ff_entity.FeatureFlagResponse) templ.Component 
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs("/feature-flags/" + featureFlag.ID + "/assignments")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/feature_flag_list.templ`, Line: 66, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/feature_flag_list.templ`, Line: 65, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -236,7 +236,7 @@ func FeatureFlagTable(featureFlags []ff_entity.FeatureFlagResponse) templ.Compon
 			templ_7745c5c3_Var13 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tbody id=\"feature_flag_table\" class=\"table-row-group\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tbody id=\"feature_flag_table\" class=\"table-row-group\" hx-trigger=\"refresh_ff_list_event from:body\" hx-swap=\"outerHTML\" hx-get=\"/feature-flags\" hx-select=\"#feature_flag_table\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func CreateFeatureFlagButton(showButton bool) templ.Component {
+func CreateFeatureFlagButton() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,17 +29,7 @@ func CreateFeatureFlagButton(showButton bool) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if showButton {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-trigger=\"create_feature_flag_event from:body\" hx-get=\"/feature-flags/component/header?showCreateButton=false\" hx-swap=\"outerHTML\"><button hx-get=\"/feature-flags/form/create-or-update\" hx-target=\"#container\" hx-swap=\"innerHTML swap:100ms\" hx-replace-url=\"/feature-flags/create\" hx-disabled-elt=\"this\" class=\"text-sm font-semibold leading-6 text-white shadow-sm bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600\"><span class=\"text-lg mr-2\">+</span>Feature Flag</button></div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><button hx-get=\"/feature-flags/form/create-or-update\" hx-target=\"body\" hx-swap=\"beforeend\" class=\"text-sm font-semibold leading-6 text-white shadow-sm bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600\"><span class=\"text-lg mr-2\">+</span>Feature Flag</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

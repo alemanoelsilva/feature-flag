@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func ErrorMessage(show bool, message string) templ.Component {
+func messageCss() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,37 +29,84 @@ func ErrorMessage(show bool, message string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"error_message\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<style type=\"text/css\">\n  #success {\n    /* Underlay covers entire screen. */\n    position: fixed;\n    bottom: 20px;\n    left: 20px;\n\n    /* Appearance */\n    background-color: rgb(12, 224, 76);\n    /* semi-transparent red */\n    color: white;\n    padding: 15px;\n    border-radius: 6px;\n    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    z-index: 9999;\n\n    /* Size */\n    max-width: 900px;\n    width: auto;\n\n    /* Animate when opening */\n    animation-name: fadeIn;\n    animation-duration: 150ms;\n    animation-timing-function: ease;\n  }\n\n  #success.closing {\n    /* Animate when closing */\n    animation-name: fadeOut;\n    animation-duration: 3s;\n    animation-timing-function: ease;\n  }\n\n  #error {\n    /* Underlay covers entire screen. */\n    position: fixed;\n    bottom: 20px;\n    left: 20px;\n\n    /* Appearance */\n    background-color: rgba(255, 0, 0, 1);\n    /* semi-transparent red */\n    color: white;\n    padding: 15px;\n    border-radius: 6px;\n    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    z-index: 9999;\n\n    /* Size */\n    max-width: 900px;\n    width: auto;\n\n    /* Animate when opening */\n    animation-name: fadeIn;\n    animation-duration: 150ms;\n    animation-timing-function: ease;\n  }\n\n  #error.closing {\n    /* Animate when closing */\n    animation-name: fadeOut;\n    animation-duration: 3s;\n    animation-timing-function: ease;\n  }\n\n  @keyframes fadeIn {\n    0% {\n      opacity: 0;\n    }\n\n    100% {\n      opacity: 1;\n    }\n  }\n\n  @keyframes fadeOut {\n    0% {\n      opacity: 1;\n    }\n\n    100% {\n      opacity: 0;\n    }\n  }\n</style>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func Message(show bool, message string, isError bool) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"message\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if show {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-trigger=\"error_event from:body\" hx-get=\"/feature-flags/component/error/dismiss\" hx-swap=\"outterHTML\">")
+			templ_7745c5c3_Err = messageCss().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if message != "" {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"fixed bottom-4 left-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-lg\" role=\"alert\"><strong class=\"font-bold\">Error:</strong> <span class=\"block sm:inline\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var2 string
-				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(message)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/error.templ`, Line: 11, Col: 45}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span hx-get=\"/feature-flags/component/error/dismiss\" hx-trigger=\"click\" hx-target=\"#error_message\" class=\"cursor-pointer ml-1 font-bold underline decoration-solid\">Dismiss</span></div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
+			}
+			if isError {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"error\" _=\"on closeMessage add .closing then wait for animationend then remove me\"><div class=\"flex\" _=\"on load wait for 4s then trigger closeMessage\"><strong class=\"text-base font-bold\">Error:</strong> <span class=\"text-base normal-case ml-2\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var3 string
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(message)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/error.templ`, Line: 101, Col: 56}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"success\" _=\"on closeMessage add .closing then wait for animationend then remove me\"><div class=\"flex\" _=\"on load wait for 4s then trigger closeMessage\"><strong class=\"text-base font-bold\">Error:</strong> <span class=\"text-base normal-case ml-2\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var4 string
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(message)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/error.templ`, Line: 108, Col: 56}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")

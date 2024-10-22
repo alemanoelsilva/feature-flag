@@ -58,9 +58,8 @@ templ FeatureFlagLine(featureFlag ff_entity.FeatureFlagResponse) {
   <td class="table-cell px-2 py-2 flex justify-center items-center">
     <div class="text-center">
       <!-- Edit -->
-      <i class="fa-regular fa-pen-to-square cursor-pointer" style="color: #8f8f8f;" hx-swap="innerHTML swap:100ms"
-        hx-get={ "/feature-flags/form/create-or-update?id=" + featureFlag.ID } hx-target="#container"
-        hx-replace-url="/feature-flags/update"></i>
+      <i class="fa-regular fa-pen-to-square cursor-pointer" style="color: #8f8f8f;"
+        hx-get={ "/feature-flags/form/create-or-update?id=" + featureFlag.ID } hx-target="body" hx-swap="beforeend"></i>
       <!-- Assignment -->
       <i hx-get={ "/feature-flags/" + featureFlag.ID + "/assignments" } hx-swap="outerHTML swap:100ms" hx-target="body"
         hx-replace-url={ "/feature-flags/" + featureFlag.ID + "/assignments" }
@@ -71,7 +70,8 @@ templ FeatureFlagLine(featureFlag ff_entity.FeatureFlagResponse) {
 }
 
 templ FeatureFlagTable(featureFlags []ff_entity.FeatureFlagResponse) {
-<tbody id="feature_flag_table" class="table-row-group">
+<tbody id="feature_flag_table" class="table-row-group" hx-trigger="refresh_ff_list_event from:body" hx-swap="outerHTML"
+  hx-get="/feature-flags" hx-select="#feature_flag_table">
   for _, featureFlag := range featureFlags {
   @FeatureFlagLine(featureFlag)
   }

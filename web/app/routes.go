@@ -90,15 +90,18 @@ func setupRoutes(e *echo.Echo) {
 	g.PUT("/:feature-flag-id/assignments/:id", ah.UpdateAssignment)
 	g.PUT("/:feature-flag-id/global", ah.SetFeatureFlagToGlobal)
 
-	//! Specific components updates by event
+	//! Specific components updated by event
 	//* is_global_event
 	g.GET("/:feature-flag-id/component/set-global-button", ah.GetGlobalButtonSetup)
 	g.GET("/:feature-flag-id/component/show-only-assigned-people", ah.GetShowOnlyAssignedPeopleFilter)
 
 	//* create_feature_flag_event
-	g.GET("/component/header", ch.GetHeader)
+	// g.GET("/component/header", ch.GetHeader)
 
+	//! Components rendering
 	//* error message TODO: search more about it
 	g.GET("/component/error/dismiss", ch.DismissErrorMessage)
+	// g.GET("/component/modal", ch.OpenModal)
+	// http://localhost:6969/feature-flags/component/modal
 
 }

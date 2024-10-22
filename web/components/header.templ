@@ -5,6 +5,6 @@ templ Header() {
 <header id="header-actions" class="flex justify-between">
 	<h1 class="text-2xl cursor-pointer" hx-get="/feature-flags" hx-target="body" hx-swap="swap:200ms"
 		hx-replace-url="/feature-flags">HTMX Feature Flags Demo Templ</h1>
-	@CreateFeatureFlagButton(true)
+	@CreateFeatureFlagButton()
 </header>
 }

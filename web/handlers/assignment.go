@@ -46,10 +46,21 @@ func FindPersonByID(id int, assignments *[]p_entity.PersonWithAssignmentResponse
 
 func (ah *AssignmentHandler) GetPeopleListToAssign(c echo.Context) error {
 	idStr := c.Param("id")
-	fmt.Printf("id %v \n", idStr)
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return errors.New("Feature flag id is invalid (not a number)")
+		return utils.Message(c, "Feature flag id is invalid (not a number)")
+	}
+
+	featureFlags, total, _ := ah.FeatureFlagService.GetFeatureFlag(model.Pagination{
+		Page:  1,
+		Limit: 1,
+	}, ff_entity.FeatureFlagFilters{
+		ID: uint(id),
+	})
+	if total == 0 {
+
+		return utils.Render(c, http.StatusNotFound, views.NotFoundPage("Feature Flag not found"))
+		// return utils.Message(c, "Feature Flag ID not found")
 	}
 
 	assignments, total, err := ah.PersonService.GetPeopleAssignmentByFeatureFlag(model.Pagination{
@@ -59,19 +70,11 @@ func (ah *AssignmentHandler) GetPeopleListToAssign(c echo.Context) error {
 		FeatureFlagID: uint(id),
 	})
 	if err != nil {
-		return errors.New("Something goes wrong when attempting to get the assignment list")
+		return utils.Message(c, "Something goes wrong when attempting to get the assignment list")
 	}
-
 	if total == 0 {
-		return errors.New("Feature Flag ID is invalid")
+		return utils.Message(c, "Feature Flag ID not found")
 	}
-
-	featureFlags, _, _ := ah.FeatureFlagService.GetFeatureFlag(model.Pagination{
-		Page:  1,
-		Limit: 1,
-	}, ff_entity.FeatureFlagFilters{
-		ID: uint(id),
-	})
 
 	return utils.Render(c, http.StatusOK, views.AssignmentsPage(assignments, featureFlags[0]))
 }
@@ -81,7 +84,7 @@ func (ah *AssignmentHandler) GetPeopleListToAssignFiltered(c echo.Context) error
 	fmt.Printf("id %v \n", idStr)
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return errors.New("Feature flag id is invalid (not a number)")
+		return utils.Message(c, "Feature flag id is invalid (not a number)")
 	}
 
 	name := c.QueryParams().Get("name")
@@ -102,12 +105,8 @@ func (ah *AssignmentHandler) GetPeopleListToAssignFiltered(c echo.Context) error
 		Limit: 500,
 	}, filters)
 	if err != nil {
-		return errors.New("Something goes wrong when attempting to get the assignment list")
+		return utils.Message(c, "Something goes wrong when attempting to get the assignment list")
 	}
-
-	// if total == 0 {
-	// 	return errors.New("Feature Flag ID is invalid")
-	// }
 
 	featureFlags, _, _ := ah.FeatureFlagService.GetFeatureFlag(model.Pagination{
 		Page:  1,

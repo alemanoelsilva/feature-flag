@@ -1,0 +1,9 @@
+package views
+
+templ NotFoundPage(msg string) {
+@AppPage() {
+<div hx-replace-url="/404">
+  { msg }
+</div>
+}
+}

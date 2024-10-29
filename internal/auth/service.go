@@ -93,16 +93,12 @@ func GetAuthInfo(cookie string) (AuthUserResponse, error) {
 	// }
 
 	authInfo := AuthUserResponse{
-		UserID: 1,
-		// PersonID:  auth.PersonID,
-		// TODO: while testing, returns 1
+		UserID:    1,
 		PersonID:  1,
 		UserEmail: "email",
 		Roles:     []string{"ADMIN"},
 		RolesID:   []int{1},
-		// IsAdmin:   isAdmin,
-		// TODO: while testing, returns true
-		IsAdmin: true,
+		IsAdmin:   true,
 	}
 
 	return authInfo, nil

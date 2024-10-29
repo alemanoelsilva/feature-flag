@@ -9,9 +9,11 @@ import (
 	featureflag "ff/internal/feature_flag"
 	person "ff/internal/person"
 	handler "ff/web/handlers"
+	"fmt"
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 )
@@ -36,9 +38,15 @@ func loadServices() (*featureflag.FeatureFlagService, *assignment.AssignmentServ
 	return featureFlagService, assignmentService, personService
 }
 
-const COOKIE_TEST = "HEEEEY FILL ME UP"
+// const COOKIE_TEST = "HEEEEY FILL ME UP"
 
 func TEST_AUTH(next echo.HandlerFunc) echo.HandlerFunc {
+	if err := godotenv.Load(); err != nil {
+		fmt.Printf("Error loading .env file: %v", err)
+	}
+
+	COOKIE_TEST := os.Getenv("COOKIE_TEST")
+
 	return func(c echo.Context) error {
 		cookie := &http.Cookie{
 			Name:     "Cookie",
